@@ -34,8 +34,14 @@ type AntigravityPart struct {
 	Text             string              `json:"text,omitempty"`
 	Thought          bool                `json:"thought,omitempty"`
 	ThoughtSignature string              `json:"thoughtSignature,omitempty"`
+	InlineData       *AntigravityBlob    `json:"inlineData,omitempty"`
 	FunctionCall     *AntigravityFnCall  `json:"functionCall,omitempty"`
 	FunctionResponse *AntigravityFnResp  `json:"functionResponse,omitempty"`
+}
+
+type AntigravityBlob struct {
+	MimeType string `json:"mimeType"`
+	Data     string `json:"data"` // base64 encoded
 }
 
 type AntigravityFnCall struct {

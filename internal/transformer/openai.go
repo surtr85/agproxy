@@ -77,11 +77,13 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			}
 
 		case "user":
-			txt := extractText(msg.Content)
-			contents = append(contents, upstream.AntigravityContent{
-				Role:  "user",
-				Parts: []upstream.AntigravityPart{{Text: txt}},
-			})
+			parts := extractMessageParts(msg.Content)
+			if len(parts) > 0 {
+				contents = append(contents, upstream.AntigravityContent{
+					Role:  "user",
+					Parts: parts,
+				})
+			}
 
 		case "assistant":
 			var parts []upstream.AntigravityPart
@@ -218,12 +220,6 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 		SessionID:        sessionID,
 	}
 
-	if len(systemParts) > 0 {
-		agReq.SystemInstruction = &upstream.AntigravityContent{
-			Parts: systemParts,
-		}
-	}
-
 	if len(functionDecls) > 0 {
 		agReq.Tools = []upstream.AntigravityTool{
 			{FunctionDeclarations: functionDecls},
@@ -237,12 +233,22 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 
 	// Handle Uncensored / Raw Research Model
 	if modelInfo.IsRawResearch {
+		systemParts = append([]upstream.AntigravityPart{
+			{Text: stealth.RawUncensoredSystemInstruction},
+		}, systemParts...)
+
 		agReq.SafetySettings = []upstream.SafetySetting{
 			{Category: "HARM_CATEGORY_HATE_SPEECH", Threshold: "BLOCK_NONE"},
 			{Category: "HARM_CATEGORY_DANGEROUS_CONTENT", Threshold: "BLOCK_NONE"},
 			{Category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", Threshold: "BLOCK_NONE"},
 			{Category: "HARM_CATEGORY_HARASSMENT", Threshold: "BLOCK_NONE"},
 			{Category: "HARM_CATEGORY_CIVIC_INTEGRITY", Threshold: "BLOCK_NONE"},
+		}
+	}
+
+	if len(systemParts) > 0 {
+		agReq.SystemInstruction = &upstream.AntigravityContent{
+			Parts: systemParts,
 		}
 	}
 
@@ -280,5 +286,51 @@ func extractText(content any) string {
 		return sb.String()
 	default:
 		return ""
+	}
+}
+
+func extractMessageParts(content any) []upstream.AntigravityPart {
+	switch v := content.(type) {
+	case string:
+		if v == "" {
+			return nil
+		}
+		return []upstream.AntigravityPart{{Text: v}}
+	case []any:
+		var parts []upstream.AntigravityPart
+		for _, item := range v {
+			m, ok := item.(map[string]any)
+			if !ok {
+				continue
+			}
+			partType, _ := m["type"].(string)
+			switch partType {
+			case "text":
+				if txt, ok := m["text"].(string); ok && txt != "" {
+					parts = append(parts, upstream.AntigravityPart{Text: txt})
+				}
+			case "image_url":
+				if imgMap, ok := m["image_url"].(map[string]any); ok {
+					if urlStr, ok := imgMap["url"].(string); ok {
+						if strings.HasPrefix(urlStr, "data:") {
+							// data:image/png;base64,...
+							partsSplit := strings.SplitN(urlStr, ";base64,", 2)
+							if len(partsSplit) == 2 {
+								mimeType := strings.TrimPrefix(partsSplit[0], "data:")
+								parts = append(parts, upstream.AntigravityPart{
+									InlineData: &upstream.AntigravityBlob{
+										MimeType: mimeType,
+										Data:     partsSplit[1],
+									},
+								})
+							}
+						}
+					}
+				}
+			}
+		}
+		return parts
+	default:
+		return nil
 	}
 }

@@ -1,0 +1,14 @@
+# Binaries
+agproxy
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Local configs and accounts (never commit credentials!)
+accounts.json
+.pi/
+
+# Logs and temporary caches
+*.log
+.DS_Store

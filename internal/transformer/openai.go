@@ -233,9 +233,9 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 
 	// Handle Uncensored / Raw Research Model
 	if modelInfo.IsRawResearch {
-		systemParts = append([]upstream.AntigravityPart{
+		systemParts = []upstream.AntigravityPart{
 			{Text: stealth.RawUncensoredSystemInstruction},
-		}, systemParts...)
+		}
 
 		agReq.SafetySettings = []upstream.SafetySetting{
 			{Category: "HARM_CATEGORY_HATE_SPEECH", Threshold: "BLOCK_NONE"},

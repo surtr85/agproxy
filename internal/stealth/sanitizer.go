@@ -76,6 +76,7 @@ var (
 	// Thought signature store (RAM cache)
 	sigMu       sync.RWMutex
 	sigCache    = make(map[string]string)
+	callNameMap = make(map[string]string)
 )
 
 func StoreThoughtSignature(callID, signature string) {
@@ -94,6 +95,21 @@ func GetThoughtSignature(callID string) string {
 		return sig
 	}
 	return DefaultThinkingAGSignature
+}
+
+func StoreToolCallName(callID, name string) {
+	if callID == "" || name == "" {
+		return
+	}
+	sigMu.Lock()
+	defer sigMu.Unlock()
+	callNameMap[callID] = name
+}
+
+func GetToolCallName(callID string) string {
+	sigMu.RLock()
+	defer sigMu.RUnlock()
+	return callNameMap[callID]
 }
 
 func SanitizePromptText(text string) string {

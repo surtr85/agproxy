@@ -86,6 +86,7 @@ func (s *SSEState) ConvertChunk(googleChunkBytes []byte) ([]byte, bool, error) {
 			if orig, ok := s.ToolNameMap[origName]; ok {
 				origName = orig
 			}
+			stealth.StoreToolCallName(callID, part.FunctionCall.Name)
 
 			argsBytes, _ := json.Marshal(part.FunctionCall.Args)
 

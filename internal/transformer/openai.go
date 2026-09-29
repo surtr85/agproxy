@@ -63,6 +63,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 	}
 	sessionID := stealth.DeriveSessionID(firstPrompt)
 	toolNameMap := make(map[string]string)
+	callIDToName := make(map[string]string)
 
 	var contents []upstream.AntigravityContent
 	var systemParts []upstream.AntigravityPart
@@ -107,6 +108,9 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 					suffixedName = name + stealth.ToolSuffix
 					toolNameMap[suffixedName] = name
 				}
+				if tc.ID != "" {
+					callIDToName[tc.ID] = suffixedName
+				}
 
 				sig := ""
 				if firstCall {
@@ -133,10 +137,17 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 		case "tool":
 			// Tool response
 			name := msg.Name
-			suffixedName := name
-			if !stealth.NativeToolsSet[name] && name != "" {
-				suffixedName = name + stealth.ToolSuffix
-				toolNameMap[suffixedName] = name
+			var suffixedName string
+			if name != "" {
+				suffixedName = name
+				if !stealth.NativeToolsSet[name] {
+					suffixedName = name + stealth.ToolSuffix
+					toolNameMap[suffixedName] = name
+				}
+			} else if mapped, ok := callIDToName[msg.ToolCallID]; ok {
+				suffixedName = mapped
+			} else if cachedName := stealth.GetToolCallName(msg.ToolCallID); cachedName != "" {
+				suffixedName = cachedName
 			}
 
 			txt := extractText(msg.Content)

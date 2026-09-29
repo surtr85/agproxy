@@ -125,3 +125,52 @@ func TestOpenAIToAntigravity_StealthSanitization(t *testing.T) {
 		t.Errorf("expected sanitized prompt 'Antigravity is awesome.', got '%s'", sysText)
 	}
 }
+
+func TestOpenAIToAntigravity_ToolResponseResolution(t *testing.T) {
+	req := &OpenAIChatRequest{
+		Model: "gemini-3.8-flash",
+		Messages: []OpenAIMessage{
+			{Role: "user", Content: "Run search"},
+			{
+				Role: "assistant",
+				ToolCalls: []OpenAIToolCall{
+					{
+						ID:   "call_12345",
+						Type: "function",
+						Function: struct {
+							Name      string `json:"name"`
+							Arguments string `json:"arguments"`
+						}{
+							Name:      "custom_search",
+							Arguments: `{"q":"test"}`,
+						},
+					},
+				},
+			},
+			{
+				Role:       "tool",
+				ToolCallID: "call_12345",
+				// Name is empty, like in pi client!
+				Content: `{"status":"ok"}`,
+			},
+		},
+	}
+
+	res, err := OpenAIToAntigravity(req, "test-proj")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(res.Payload.Request.Contents) != 3 {
+		t.Fatalf("expected 3 contents, got %d", len(res.Payload.Request.Contents))
+	}
+
+	toolRespPart := res.Payload.Request.Contents[2].Parts[0].FunctionResponse
+	if toolRespPart == nil {
+		t.Fatalf("expected function response part")
+	}
+
+	if toolRespPart.Name != "custom_search_ide" {
+		t.Errorf("expected tool response name 'custom_search_ide', got %q", toolRespPart.Name)
+	}
+}

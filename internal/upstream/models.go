@@ -4,7 +4,6 @@ type ModelInfo struct {
 	ID            string `json:"id"`
 	UpstreamModel string `json:"upstream_model"`
 	DisplayName   string `json:"display_name"`
-	IsRawResearch bool   `json:"is_raw_research"`
 }
 
 var ModelRegistry = map[string]ModelInfo{
@@ -28,14 +27,6 @@ var ModelRegistry = map[string]ModelInfo{
 		ID:            "gemini-3.8-flash-low",
 		UpstreamModel: "gemini-3.8-flash-low",
 		DisplayName:   "Gemini 3.8 Flash (Low)",
-	},
-
-	// Bleeding-Edge Unfiltered Research Model (requested by user)
-	"gemini-3.8-flash-raw": {
-		ID:            "gemini-3.8-flash-raw",
-		UpstreamModel: "gemini-3.8-flash-low",
-		DisplayName:   "Gemini 3.8 Flash Raw (Research - Permissive Safety)",
-		IsRawResearch: true,
 	},
 
 	// Gemini 3.7 Family

@@ -35,34 +35,6 @@ func TestOpenAIToAntigravity_Basic(t *testing.T) {
 	}
 }
 
-func TestOpenAIToAntigravity_ResearchRawModel(t *testing.T) {
-	req := &OpenAIChatRequest{
-		Model: "gemini-3.8-flash-raw",
-		Messages: []OpenAIMessage{
-			{Role: "user", Content: "Explain advanced quantum mechanics."},
-		},
-	}
-
-	res, err := OpenAIToAntigravity(req, "test-project-raw")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	if res.Payload.Model != "gemini-3.8-flash-low" {
-		t.Errorf("expected upstream model gemini-3.8-flash-low, got %s", res.Payload.Model)
-	}
-
-	if len(res.Payload.Request.SafetySettings) != 5 {
-		t.Fatalf("expected 5 permissive safety settings, got %d", len(res.Payload.Request.SafetySettings))
-	}
-
-	for _, s := range res.Payload.Request.SafetySettings {
-		if s.Threshold != "BLOCK_NONE" {
-			t.Errorf("expected safety threshold BLOCK_NONE, got %s for %s", s.Threshold, s.Category)
-		}
-	}
-}
-
 func TestOpenAIToAntigravity_ToolCloaking(t *testing.T) {
 	req := &OpenAIChatRequest{
 		Model: "gemini-3.8-flash",

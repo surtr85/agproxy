@@ -23,6 +23,7 @@ type Account struct {
 type Store struct {
 	mu           sync.RWMutex
 	filePath     string
+	lastModTime  time.Time
 	ActiveEmail  string              `json:"active_email"`
 	Accounts     map[string]*Account `json:"accounts"`
 	currentIndex int
@@ -60,6 +61,10 @@ func LoadStore() (*Store, error) {
 		return nil, err
 	}
 
+	if fi, err := os.Stat(path); err == nil {
+		s.lastModTime = fi.ModTime()
+	}
+
 	if err := json.Unmarshal(data, s); err != nil {
 		return nil, fmt.Errorf("failed to parse accounts.json: %w", err)
 	}
@@ -71,38 +76,108 @@ func LoadStore() (*Store, error) {
 	return s, nil
 }
 
+func (s *Store) syncFromDiskLocked() {
+	fi, err := os.Stat(s.filePath)
+	if err != nil {
+		return
+	}
+	// If disk file hasn't changed since we last read it, skip
+	if !fi.ModTime().After(s.lastModTime) {
+		return
+	}
+
+	data, err := os.ReadFile(s.filePath)
+	if err != nil {
+		return
+	}
+
+	var diskStore struct {
+		ActiveEmail string              `json:"active_email"`
+		Accounts    map[string]*Account `json:"accounts"`
+	}
+	if err := json.Unmarshal(data, &diskStore); err != nil {
+		return
+	}
+
+	if s.Accounts == nil {
+		s.Accounts = make(map[string]*Account)
+	}
+
+	// Merge accounts: preserve local accounts and pull any new/updated accounts from disk
+	for email, acc := range diskStore.Accounts {
+		if localAcc, exists := s.Accounts[email]; exists {
+			if acc.ExpiresAt.After(localAcc.ExpiresAt) {
+				localAcc.AccessToken = acc.AccessToken
+				localAcc.RefreshToken = acc.RefreshToken
+				localAcc.ExpiresAt = acc.ExpiresAt
+			}
+			if acc.ProjectID != "" {
+				localAcc.ProjectID = acc.ProjectID
+			}
+			if acc.TierID != "" {
+				localAcc.TierID = acc.TierID
+			}
+		} else {
+			s.Accounts[email] = acc
+		}
+	}
+
+	if s.ActiveEmail == "" && diskStore.ActiveEmail != "" {
+		s.ActiveEmail = diskStore.ActiveEmail
+	}
+
+	s.lastModTime = fi.ModTime()
+}
+
+func (s *Store) SyncFromDisk() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.syncFromDiskLocked()
+}
+
 func (s *Store) Save() error {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.saveLocked()
+}
+
+func (s *Store) saveLocked() error {
+	// Always sync from disk first to merge accounts added by external CLI commands
+	s.syncFromDiskLocked()
 
 	data, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	return os.WriteFile(s.filePath, data, 0600)
+	if err := os.WriteFile(s.filePath, data, 0600); err != nil {
+		return err
+	}
+
+	if fi, err := os.Stat(s.filePath); err == nil {
+		s.lastModTime = fi.ModTime()
+	}
+	return nil
 }
 
 func (s *Store) AddOrUpdateAccount(acc *Account) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	s.syncFromDiskLocked()
 	s.Accounts[acc.Email] = acc
 	if s.ActiveEmail == "" {
 		s.ActiveEmail = acc.Email
 	}
 
-	data, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(s.filePath, data, 0600)
+	return s.saveLocked()
 }
 
 func (s *Store) RemoveAccount(email string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	s.syncFromDiskLocked()
 	delete(s.Accounts, email)
 	if s.ActiveEmail == email {
 		s.ActiveEmail = ""
@@ -112,32 +187,27 @@ func (s *Store) RemoveAccount(email string) error {
 		}
 	}
 
-	data, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(s.filePath, data, 0600)
+	return s.saveLocked()
 }
 
 func (s *Store) SetActive(email string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	s.syncFromDiskLocked()
 	if _, ok := s.Accounts[email]; !ok {
 		return fmt.Errorf("account with email %s not found", email)
 	}
 	s.ActiveEmail = email
 
-	data, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(s.filePath, data, 0600)
+	return s.saveLocked()
 }
 
 func (s *Store) GetActiveAccount() *Account {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.syncFromDiskLocked()
 
 	now := time.Now()
 	// Check if active account is valid and not blocked
@@ -161,6 +231,8 @@ func (s *Store) GetActiveAccount() *Account {
 func (s *Store) RotateNextAccount(failedEmail string, blockDuration time.Duration) *Account {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	s.syncFromDiskLocked()
 
 	now := time.Now()
 	if failed, ok := s.Accounts[failedEmail]; ok {
@@ -196,12 +268,4 @@ func (s *Store) MarkSuccess(email string) {
 		acc.BlockedUntil = time.Time{}
 		_ = s.saveLocked()
 	}
-}
-
-func (s *Store) saveLocked() error {
-	data, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(s.filePath, data, 0600)
 }

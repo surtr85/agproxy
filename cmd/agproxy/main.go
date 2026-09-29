@@ -161,6 +161,7 @@ func handleLogin(store *config.Store) {
 }
 
 func handleQuota(store *config.Store) {
+	store.SyncFromDisk()
 	if len(store.Accounts) == 0 {
 		fmt.Println("No accounts registered yet. Run 'agproxy login' to add an account.")
 		return
@@ -182,6 +183,7 @@ func handleQuota(store *config.Store) {
 }
 
 func handleAccounts(store *config.Store, args []string) {
+	store.SyncFromDisk()
 	if len(args) == 0 || args[0] == "list" {
 		if len(store.Accounts) == 0 {
 			fmt.Println("No accounts registered. Run 'agproxy login' first.")

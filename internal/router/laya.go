@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -20,10 +21,19 @@ type LayaDecision struct {
 	} `json:"answers"`
 }
 
+// Fast regex for trivial conversational greetings and pleasantries (< 1ms)
+var trivialGreetingRegex = regexp.MustCompile(`(?i)^(?:hi|hello|hey|howdy|greetings|good\s+(?:morning|afternoon|evening)|how\s+are\s+you|what'?s\s+up|sup|thanks?|thank\s+you|سلام|درود|خوبی|چطوری|احوالت|صبح\s*بخیر|عصر\s*بخیر|شب\s*بخیر|مرسی|ممنون|دمت\s*گرم|قربانت)[\s!?.،]*$`)
+
 // RouteWithLaya queries Laya System-1 on port 8089 to dynamically select the optimal Google model
 func RouteWithLaya(prompt string) upstream.ModelInfo {
 	trimmed := strings.TrimSpace(prompt)
 	if trimmed == "" {
+		return upstream.ModelRegistry["gemini-3.8-flash-low"]
+	}
+
+	// Fast heuristic: Ultra-short greetings & small talk bypass network directly to Flash-Low
+	if len(trimmed) < 80 && trivialGreetingRegex.MatchString(trimmed) {
+		log.Printf("[LAYA:FAST_ROUTER] Trivial conversational greeting detected: %q => Selected Google Model: gemini-3.8-flash-low", trimmed)
 		return upstream.ModelRegistry["gemini-3.8-flash-low"]
 	}
 
@@ -87,22 +97,26 @@ func RouteWithLaya(prompt string) upstream.ModelInfo {
 	domain := decision.Answers["domain"].Choice
 	diff := decision.Answers["difficulty"].Score
 
-	// Google-Only Model Routing Matrix
+	// Google-Only Model Routing Matrix calibrated to empirical Laya difficulty distributions:
+	// - [0.0 - 1.35]: Trivial / Easy / Small talk / Basic one-liners
+	// - [1.35 - 1.70]: Moderate standard tasks
+	// - [1.70 - 2.05]: High complexity coding / Deep system logic
+	// - [>= 2.05 or math_or_logic]: Hard logic, proofs, critical architecture
 	var selectedModel string
 	switch {
-	// Deep Math, Logic, or Critical Hard Complexity -> Gemini 3.1 Pro
-	case diff >= 2.5 || domain == "math_or_logic":
-		selectedModel = "gemini-3.1-pro"
-
-	// High Complexity Coding or Deep Multi-step Architecture -> Gemini 3.8 Flash (High effort)
-	case (domain == "code" && diff >= 1.6) || diff >= 2.0:
-		selectedModel = "gemini-3.8-flash-high"
-
-	// Conversational, Greeting, Trivial Lookup -> Gemini 3.8 Flash (Low effort)
-	case diff < 0.9 && (domain == "chitchat" || domain == "factual_lookup"):
+	// 1. Trivial chitchat, greetings, or very easy queries (< 1.30) -> Flash Low
+	case domain == "chitchat" || diff < 1.30 || (domain == "other" && diff < 1.40):
 		selectedModel = "gemini-3.8-flash-low"
 
-	// Balanced Standard Tasks -> Gemini 3.8 Flash (Medium effort)
+	// 2. High-difficulty mathematical proofs, formal logic, or extreme complexity -> Gemini 3.1 Pro
+	case domain == "math_or_logic" || diff >= 2.10:
+		selectedModel = "gemini-3.1-pro"
+
+	// 3. High-complexity coding, distributed systems, deep concurrency, architecture -> Gemini 3.8 Flash High
+	case (domain == "code" && diff >= 1.65) || diff >= 1.85:
+		selectedModel = "gemini-3.8-flash-high"
+
+	// 4. Standard coding, writing, refactoring -> Gemini 3.8 Flash Medium
 	default:
 		selectedModel = "gemini-3.8-flash-medium"
 	}

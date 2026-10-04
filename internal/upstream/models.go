@@ -68,7 +68,7 @@ var ModelRegistry = map[string]ModelInfo{
 	// Laya Autonomous System-1 Router (Google Gemini Multi-Tier)
 	"laya": {
 		ID:            "laya",
-		UpstreamModel: "laya",
+		UpstreamModel: "gemini-3.8-flash-low",
 		DisplayName:   "Laya System-1 Autonomous Router (Google Gemini Multi-Tier)",
 	},
 

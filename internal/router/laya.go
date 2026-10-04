@@ -22,7 +22,7 @@ type LayaDecision struct {
 }
 
 // Fast regex for trivial conversational greetings and pleasantries (< 1ms)
-var trivialGreetingRegex = regexp.MustCompile(`(?i)^(?:hi|hello|hey|howdy|greetings|good\s+(?:morning|afternoon|evening)|how\s+are\s+you|what'?s\s+up|sup|thanks?|thank\s+you|سلام|درود|خوبی|چطوری|احوالت|صبح\s*بخیر|عصر\s*بخیر|شب\s*بخیر|مرسی|ممنون|دمت\s*گرم|قربانت)[\s!?.،]*$`)
+var trivialGreetingRegex = regexp.MustCompile(`(?i)^(?:hi|hello|hey|howdy|greetings|good\s+(?:morning|afternoon|evening)|how\s+are\s+you|what'?s\s+up|sup|thanks?|thank\s+you|ping|pong|test|سلام|درود|خوبی|چطوری|احوالت|صبح\s*بخیر|عصر\s*بخیر|شب\s*بخیر|مرسی|ممنون|دمت\s*گرم|قربانت|پینگ|تست)[\s!?.،]*$`)
 
 // RouteWithLaya queries Laya System-1 on port 8089 to dynamically select the optimal Google model
 func RouteWithLaya(prompt string) upstream.ModelInfo {

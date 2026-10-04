@@ -174,3 +174,38 @@ func TestOpenAIToAntigravity_ToolResponseResolution(t *testing.T) {
 		t.Errorf("expected tool response name 'custom_search_ide', got %q", toolRespPart.Name)
 	}
 }
+
+func TestOpenAIToAntigravity_LayaRouting(t *testing.T) {
+	req := &OpenAIChatRequest{
+		Model: "laya",
+		Messages: []OpenAIMessage{
+			{Role: "user", Content: "ping"},
+		},
+	}
+
+	res, err := OpenAIToAntigravity(req, "test-proj")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if res.Payload.Model != "gemini-3.8-flash-low" {
+		t.Errorf("expected model gemini-3.8-flash-low for 'ping', got %s", res.Payload.Model)
+	}
+
+	// Test prefixed model name
+	reqPrefixed := &OpenAIChatRequest{
+		Model: "agproxy/laya",
+		Messages: []OpenAIMessage{
+			{Role: "user", Content: "ping"},
+		},
+	}
+
+	resPrefixed, err := OpenAIToAntigravity(reqPrefixed, "test-proj")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if resPrefixed.Payload.Model != "gemini-3.8-flash-low" {
+		t.Errorf("expected model gemini-3.8-flash-low for agproxy/laya, got %s", resPrefixed.Payload.Model)
+	}
+}

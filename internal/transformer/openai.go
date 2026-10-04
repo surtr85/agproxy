@@ -54,7 +54,8 @@ type TransformResult struct {
 
 func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformResult, error) {
 	var modelInfo upstream.ModelInfo
-	if req.Model == "laya" {
+	modelClean := strings.TrimPrefix(req.Model, "agproxy/")
+	if modelClean == "laya" {
 		lastUserPrompt := ""
 		for i := len(req.Messages) - 1; i >= 0; i-- {
 			if req.Messages[i].Role == "user" {
@@ -64,7 +65,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 		}
 		modelInfo = router.RouteWithLaya(lastUserPrompt)
 	} else {
-		modelInfo = upstream.ResolveModel(req.Model)
+		modelInfo = upstream.ResolveModel(modelClean)
 	}
 
 	firstPrompt := ""

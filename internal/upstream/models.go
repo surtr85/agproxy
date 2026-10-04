@@ -58,6 +58,20 @@ var ModelRegistry = map[string]ModelInfo{
 		DisplayName:   "Gemini 3.6 Flash",
 	},
 
+	// Gemini Pro Family
+	"gemini-3.1-pro": {
+		ID:            "gemini-3.1-pro",
+		UpstreamModel: "gemini-3.1-pro",
+		DisplayName:   "Gemini 3.1 Pro",
+	},
+
+	// Laya Autonomous System-1 Router (Google Gemini Multi-Tier)
+	"laya": {
+		ID:            "laya",
+		UpstreamModel: "laya",
+		DisplayName:   "Laya System-1 Autonomous Router (Google Gemini Multi-Tier)",
+	},
+
 	// Claude Family via Antigravity
 	"claude-sonnet-4-6": {
 		ID:            "claude-sonnet-4-6",

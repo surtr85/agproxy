@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/surtr85/agproxy/internal/router"
 	"github.com/surtr85/agproxy/internal/stealth"
 	"github.com/surtr85/agproxy/internal/upstream"
 )
@@ -52,7 +53,19 @@ type TransformResult struct {
 }
 
 func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformResult, error) {
-	modelInfo := upstream.ResolveModel(req.Model)
+	var modelInfo upstream.ModelInfo
+	if req.Model == "laya" {
+		lastUserPrompt := ""
+		for i := len(req.Messages) - 1; i >= 0; i-- {
+			if req.Messages[i].Role == "user" {
+				lastUserPrompt = extractText(req.Messages[i].Content)
+				break
+			}
+		}
+		modelInfo = router.RouteWithLaya(lastUserPrompt)
+	} else {
+		modelInfo = upstream.ResolveModel(req.Model)
+	}
 
 	firstPrompt := ""
 	for _, msg := range req.Messages {

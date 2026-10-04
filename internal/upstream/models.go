@@ -61,8 +61,13 @@ var ModelRegistry = map[string]ModelInfo{
 	// Gemini Pro Family
 	"gemini-3.1-pro": {
 		ID:            "gemini-3.1-pro",
-		UpstreamModel: "gemini-3.1-pro",
+		UpstreamModel: "gemini-3.1-pro-low",
 		DisplayName:   "Gemini 3.1 Pro",
+	},
+	"gemini-3.1-pro-low": {
+		ID:            "gemini-3.1-pro-low",
+		UpstreamModel: "gemini-3.1-pro-low",
+		DisplayName:   "Gemini 3.1 Pro (Low)",
 	},
 
 	// Laya Autonomous System-1 Router (Google Gemini Multi-Tier)

@@ -32,8 +32,30 @@ func RouteWithLaya(prompt string) upstream.ModelInfo {
 	defer cancel()
 
 	payload, _ := json.Marshal(map[string]any{
-		"preset": "router",
-		"state":  trimmed,
+		"state": trimmed,
+		"questions": map[string]any{
+			"domain": map[string]any{
+				"type":         "choice",
+				"instructions": "What domain does request belong to?",
+				"criteria": map[string]string{
+					"code":          "programming, software engineering, debugging, architecture, scripts",
+					"math_or_logic": "mathematics, logic proofs, complex multi-step calculation",
+					"writing":       "creative writing, essays, emails",
+					"chitchat":      "casual conversation, greetings, small talk, jokes",
+					"other":         "general knowledge, simple lookups, definitions",
+				},
+			},
+			"difficulty": map[string]any{
+				"type":         "score",
+				"instructions": "How hard is request for a language model?",
+				"criteria": []string{
+					"trivial: a lookup or one-liner",
+					"easy: short answer, no reasoning",
+					"moderate: several steps",
+					"hard: long multi-step reasoning or specialist knowledge",
+				},
+			},
+		},
 	})
 
 	req, err := http.NewRequestWithContext(ctx, "POST", "http://127.0.0.1:8089/v1/systemone", bytes.NewReader(payload))

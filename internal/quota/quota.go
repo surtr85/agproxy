@@ -5,27 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/surtr85/agproxy/internal/auth"
 	"github.com/surtr85/agproxy/internal/config"
 	"github.com/surtr85/agproxy/internal/upstream"
 )
-
-type FetchAvailableModelsResponse struct {
-	Models map[string]ModelQuotaItem `json:"models"`
-}
-
-type ModelQuotaItem struct {
-	QuotaInfo *struct {
-		RemainingFraction float64 `json:"remainingFraction"`
-		ResetTime         string  `json:"resetTime"`
-	} `json:"quotaInfo"`
-	DisplayName string `json:"displayName"`
-	IsInternal  bool   `json:"isInternal"`
-}
 
 type RetrieveUserQuotaSummaryResponse struct {
 	Groups []struct {
@@ -41,15 +28,20 @@ type RetrieveUserQuotaSummaryResponse struct {
 	} `json:"groups"`
 }
 
+type SingleQuotaItem struct {
+	Name       string
+	Used       int
+	Total      int
+	Percentage int
+	ResetIn    string
+	ResetTime  time.Time
+}
+
 type QuotaReport struct {
-	Email         string
-	ProjectID     string
-	TierID        string
-	Models        map[string]float64 // model -> remaining %
-	WeeklyGemini  float64
-	SessionGemini float64
-	WeeklyClaude  float64
-	SessionClaude float64
+	Email     string
+	ProjectID string
+	TierID    string
+	Items     []SingleQuotaItem
 }
 
 func FetchAccountQuota(acc *config.Account, store *config.Store) (*QuotaReport, error) {
@@ -59,161 +51,217 @@ func FetchAccountQuota(acc *config.Account, store *config.Store) (*QuotaReport, 
 	}
 
 	report := &QuotaReport{
-		Email:         acc.Email,
-		ProjectID:     acc.ProjectID,
-		TierID:        acc.TierID,
-		Models:        make(map[string]float64),
-		WeeklyGemini:  -1,
-		SessionGemini: -1,
-		WeeklyClaude:  -1,
-		SessionClaude: -1,
+		Email:     acc.Email,
+		ProjectID: acc.ProjectID,
+		TierID:    acc.TierID,
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	// 1. Fetch available models quota
-	modelsURL := fmt.Sprintf("%s/v1internal:fetchAvailableModels", upstream.BaseURL)
-	reqBody, _ := json.Marshal(map[string]string{"project": acc.ProjectID})
-	req, err := http.NewRequest("POST", modelsURL, bytes.NewReader(reqBody))
-	if err == nil {
-		req.Header.Set("Authorization", "Bearer "+token)
-		req.Header.Set("User-Agent", upstream.UserAgent)
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("X-Client-Name", "antigravity")
-		req.Header.Set("X-Client-Version", "2.11.0")
+	// Fetch fresh tier info if needed
+	if projectID, tier, err := auth.LoadProjectAndTier(token); err == nil && tier != "" {
+		report.TierID = tier
+		if projectID != "" {
+			report.ProjectID = projectID
+		}
+	}
 
-		if resp, err := client.Do(req); err == nil {
-			defer resp.Body.Close()
-			if resp.StatusCode == http.StatusOK {
-				var data FetchAvailableModelsResponse
-				if err := json.NewDecoder(resp.Body).Decode(&data); err == nil {
-					for k, v := range data.Models {
-						if v.QuotaInfo != nil && !v.IsInternal {
-							report.Models[k] = v.QuotaInfo.RemainingFraction * 100.0
+	// Retrieve User Quota Summary
+	summaryURL := fmt.Sprintf("%s/v1internal:retrieveUserQuotaSummary", upstream.BaseURL)
+	reqBody, _ := json.Marshal(map[string]string{"project": acc.ProjectID})
+	req, err := http.NewRequest("POST", summaryURL, bytes.NewReader(reqBody))
+	if err != nil {
+		return report, nil
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("User-Agent", upstream.UserAgent)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return report, nil
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	var data RetrieveUserQuotaSummaryResponse
+	_ = json.Unmarshal(bodyBytes, &data)
+
+	// Extract 5h window fractions for Gemini & 3P (Claude/GPT)
+	var geminiRemaining = 1.0
+	var geminiResetStr = "5h 0m"
+	var geminiResetTime time.Time
+
+	var claudeRemaining = 1.0
+	var claudeResetStr = "5h 0m"
+	var claudeResetTime time.Time
+
+	now := time.Now()
+
+	for _, g := range data.Groups {
+		isGemini := bytes.Contains([]byte(g.DisplayName), []byte("Gemini"))
+		is3P := bytes.Contains([]byte(g.DisplayName), []byte("Claude")) || bytes.Contains([]byte(g.DisplayName), []byte("GPT"))
+
+		for _, b := range g.Buckets {
+			if b.Window == "5h" || (!bytes.Contains([]byte(b.DisplayName), []byte("Weekly")) && !bytes.Contains([]byte(b.BucketID), []byte("weekly"))) {
+				rem := b.RemainingFraction
+				if b.Disabled {
+					rem = 0
+				}
+				resetDiff := ""
+				var t time.Time
+				if b.ResetTime != "" {
+					if parsed, err := time.Parse(time.RFC3339Nano, b.ResetTime); err == nil {
+						t = parsed
+						if parsed.After(now) {
+							resetDiff = formatTimeRemaining(parsed.Sub(now))
+						} else {
+							resetDiff = "now"
 						}
+					}
+				}
+
+				if isGemini {
+					geminiRemaining = rem
+					geminiResetTime = t
+					if resetDiff != "" {
+						geminiResetStr = resetDiff
+					}
+				} else if is3P {
+					claudeRemaining = rem
+					claudeResetTime = t
+					if resetDiff != "" {
+						claudeResetStr = resetDiff
 					}
 				}
 			}
 		}
 	}
 
-	// 2. Fetch weekly / session quota summary
-	summaryURL := fmt.Sprintf("%s/v1internal:retrieveUserQuotaSummary", upstream.BaseURL)
-	req2, err := http.NewRequest("POST", summaryURL, bytes.NewReader(reqBody))
-	if err == nil {
-		req2.Header.Set("Authorization", "Bearer "+token)
-		req2.Header.Set("User-Agent", upstream.UserAgent)
-		req2.Header.Set("Content-Type", "application/json")
+	// Calculate 1,000 unit budget
+	// Percentage = remainingFraction * 100
+	// Used = round((1.0 - remainingFraction) * 1000)
+	geminiPct := int(math.Round(geminiRemaining * 100))
+	geminiUsed := int(math.Round((1.0 - geminiRemaining) * 1000))
+	if geminiUsed < 0 {
+		geminiUsed = 0
+	}
+	if geminiUsed > 1000 {
+		geminiUsed = 1000
+	}
 
-		if resp, err := client.Do(req2); err == nil {
-			defer resp.Body.Close()
-			bodyBytes, _ := io.ReadAll(resp.Body)
-			var data RetrieveUserQuotaSummaryResponse
-			if err := json.Unmarshal(bodyBytes, &data); err == nil {
-				for _, g := range data.Groups {
-					isGemini := bytes.Contains([]byte(g.DisplayName), []byte("Gemini"))
-					isClaude := bytes.Contains([]byte(g.DisplayName), []byte("Claude")) || bytes.Contains([]byte(g.DisplayName), []byte("GPT"))
+	claudePct := int(math.Round(claudeRemaining * 100))
+	claudeUsed := int(math.Round((1.0 - claudeRemaining) * 1000))
+	if claudeUsed < 0 {
+		claudeUsed = 0
+	}
+	if claudeUsed > 1000 {
+		claudeUsed = 1000
+	}
 
-					for _, b := range g.Buckets {
-						rem := b.RemainingFraction * 100.0
-						if b.Disabled {
-							rem = 0
-						}
-						w := b.Window
-						if w == "weekly" || bytes.Contains([]byte(b.DisplayName), []byte("Weekly")) || bytes.Contains([]byte(g.DisplayName), []byte("Weekly")) {
-							if isGemini {
-								report.WeeklyGemini = rem
-							} else if isClaude {
-								report.WeeklyClaude = rem
-							}
-						} else {
-							if isGemini {
-								report.SessionGemini = rem
-							} else if isClaude {
-								report.SessionClaude = rem
-							}
-						}
-					}
-				}
-			}
-		}
+	// 4 Quota items matching the UI architecture:
+	// 1. Gemini (Flash / Pro)
+	// 2. Claude (Sonnet / Opus)
+	// 3. GPT-OSS 120B (Medium)
+	// 4. Gemini 3.1 Flash Image (shares Gemini bucket)
+	report.Items = []SingleQuotaItem{
+		{
+			Name:       "Gemini (Flash / Pro)",
+			Used:       geminiUsed,
+			Total:      1000,
+			Percentage: geminiPct,
+			ResetIn:    geminiResetStr,
+			ResetTime:  geminiResetTime,
+		},
+		{
+			Name:       "Claude (Sonnet / Opus)",
+			Used:       claudeUsed,
+			Total:      1000,
+			Percentage: claudePct,
+			ResetIn:    claudeResetStr,
+			ResetTime:  claudeResetTime,
+		},
+		{
+			Name:       "GPT-OSS 120B (Medium)",
+			Used:       claudeUsed,
+			Total:      1000,
+			Percentage: claudePct,
+			ResetIn:    claudeResetStr,
+			ResetTime:  claudeResetTime,
+		},
+		{
+			Name:       "Gemini 3.1 Flash Image",
+			Used:       geminiUsed,
+			Total:      1000,
+			Percentage: geminiPct,
+			ResetIn:    geminiResetStr,
+			ResetTime:  geminiResetTime,
+		},
 	}
 
 	return report, nil
 }
 
+func formatTimeRemaining(d time.Duration) string {
+	if d <= 0 {
+		return "now"
+	}
+	hours := int(d.Hours())
+	mins := int(d.Minutes()) % 60
+	if hours > 0 {
+		return fmt.Sprintf("in %dh %dm", hours, mins)
+	}
+	return fmt.Sprintf("in %dm", mins)
+}
+
+// PrintQuotaTable prints the Antigravity card layout matching the 4 quotas UI
 func PrintQuotaTable(reports []*QuotaReport) {
 	fmt.Println()
-	fmt.Println("==========================================================================================")
-	fmt.Printf("%-28s | %-12s | %-16s | %-16s\n", "ACCOUNT", "TIER", "GEMINI (5h / Wk)", "CLAUDE (5h / Wk)")
-	fmt.Println("------------------------------------------------------------------------------------------")
-
 	for _, r := range reports {
-		geminiStr := fmtQuotaPair(r.SessionGemini, r.WeeklyGemini)
-		claudeStr := fmtQuotaPair(r.SessionClaude, r.WeeklyClaude)
+		fmt.Println("┌─────────────────────────────────────────────────────────────────────────────┐")
+		fmt.Printf("│ ✦ Antigravity  %-43s [%s]\n", r.Email, r.TierID)
+		fmt.Printf("│   %d quotas\n", len(r.Items))
+		fmt.Println("├─────────────────────────────────────────────────────────────────────────────┤")
 
-		tier := r.TierID
-		if len(tier) > 12 {
-			tier = tier[:12]
-		}
-		fmt.Printf("%-28s | %-12s | %-16s | %-16s\n", truncate(r.Email, 28), tier, geminiStr, claudeStr)
-	}
-	fmt.Println("==========================================================================================")
+		for _, item := range r.Items {
+			bar := renderBar(item.Percentage, 24)
+			colorDot := "●"
+			if item.Percentage < 60 {
+				colorDot = "🟡"
+			} else {
+				colorDot = "🟢"
+			}
 
-	// Detail per-model breakdown
-	for _, r := range reports {
-		if len(r.Models) > 0 {
-			fmt.Printf("\nDetailed Model Quota for [%s]:\n", r.Email)
-			var keys []string
-			for k := range r.Models {
-				keys = append(keys, k)
-			}
-			sort.Strings(keys)
-			for _, k := range keys {
-				val := r.Models[k]
-				bar := renderProgressBar(val)
-				fmt.Printf("  • %-26s %s %5.1f%%\n", k, bar, val)
-			}
+			fmt.Printf("│ %s %-23s %4d / %-5d %s  %3d%%  %-8s │\n",
+				colorDot,
+				item.Name,
+				item.Used,
+				item.Total,
+				bar,
+				item.Percentage,
+				item.ResetIn,
+			)
 		}
+		fmt.Println("└─────────────────────────────────────────────────────────────────────────────┘")
+		fmt.Println()
 	}
-	fmt.Println()
 }
 
-func fmtQuotaPair(session, weekly float64) string {
-	sStr := "N/A"
-	wStr := "N/A"
-	if session >= 0 {
-		sStr = fmt.Sprintf("%.0f%%", session)
-	}
-	if weekly >= 0 {
-		wStr = fmt.Sprintf("%.0f%%", weekly)
-	}
-	return fmt.Sprintf("%s / %s", sStr, wStr)
-}
-
-func renderProgressBar(pct float64) string {
-	width := 15
-	filled := int((pct / 100.0) * float64(width))
+func renderBar(pct int, width int) string {
+	filled := int((float64(pct) / 100.0) * float64(width))
 	if filled > width {
 		filled = width
 	}
 	if filled < 0 {
 		filled = 0
 	}
-	bar := "["
+	bar := ""
 	for i := 0; i < filled; i++ {
-		bar += "#"
+		bar += "━"
 	}
 	for i := filled; i < width; i++ {
-		bar += "-"
+		bar += "─"
 	}
-	bar += "]"
 	return bar
-}
-
-func truncate(s string, max int) string {
-	if len(s) > max {
-		return s[:max-3] + "..."
-	}
-	return s
 }

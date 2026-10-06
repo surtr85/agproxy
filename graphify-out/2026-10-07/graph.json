@@ -4,6 +4,17 @@
   "graph": {},
   "nodes": [
     {
+      "id": "go_type_testing_t",
+      "label": "testing.T",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testing.t",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "internal_stealth_sanitizer",
       "label": "sanitizer.go",
       "_origin": "ast",
@@ -103,28 +114,6 @@
       "source_location": "L120"
     },
     {
-      "id": "internal_stealth_sanitizer_storethoughtsignature",
-      "label": "StoreThoughtSignature()",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "OpenAIToAntigravity",
-      "file_type": "code",
-      "norm_label": "storethoughtsignature()",
-      "source_file": "internal/stealth/sanitizer.go",
-      "source_location": "L82"
-    },
-    {
-      "id": "internal_stealth_sanitizer_storetoolcallname",
-      "label": "StoreToolCallName()",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "OpenAIToAntigravity",
-      "file_type": "code",
-      "norm_label": "storetoolcallname()",
-      "source_file": "internal/stealth/sanitizer.go",
-      "source_location": "L105"
-    },
-    {
       "id": "internal_transformer_openai",
       "label": "openai.go",
       "_origin": "ast",
@@ -169,6 +158,72 @@
       "source_location": "L55"
     },
     {
+      "id": "internal_transformer_openai_test",
+      "label": "openai_test.go",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "openai_test.go",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L1"
+    },
+    {
+      "id": "internal_transformer_openai_test_testopenaitoantigravity_basic",
+      "label": "TestOpenAIToAntigravity_Basic()",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testopenaitoantigravity_basic()",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L7"
+    },
+    {
+      "id": "internal_transformer_openai_test_testopenaitoantigravity_layarouting",
+      "label": "TestOpenAIToAntigravity_LayaRouting()",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testopenaitoantigravity_layarouting()",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L178"
+    },
+    {
+      "id": "internal_transformer_openai_test_testopenaitoantigravity_stealthsanitization",
+      "label": "TestOpenAIToAntigravity_StealthSanitization()",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testopenaitoantigravity_stealthsanitization()",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L106"
+    },
+    {
+      "id": "internal_transformer_openai_test_testopenaitoantigravity_toolcloaking",
+      "label": "TestOpenAIToAntigravity_ToolCloaking()",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testopenaitoantigravity_toolcloaking()",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L38"
+    },
+    {
+      "id": "internal_transformer_openai_test_testopenaitoantigravity_toolresponseresolution",
+      "label": "TestOpenAIToAntigravity_ToolResponseResolution()",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "OpenAIToAntigravity",
+      "file_type": "code",
+      "norm_label": "testopenaitoantigravity_toolresponseresolution()",
+      "source_file": "internal/transformer/openai_test.go",
+      "source_location": "L129"
+    },
+    {
       "id": "transformer_openaichatrequest",
       "label": "OpenAIChatRequest",
       "_origin": "ast",
@@ -211,105 +266,6 @@
       "norm_label": "openaitoolcall",
       "source_file": "internal/transformer/openai.go",
       "source_location": "L21"
-    },
-    {
-      "id": "transformer_ssestate",
-      "label": "SSEState",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "OpenAIToAntigravity",
-      "file_type": "code",
-      "norm_label": "ssestate",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L52"
-    },
-    {
-      "id": "transformer_ssestate_convertchunk",
-      "label": ".ConvertChunk()",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "OpenAIToAntigravity",
-      "file_type": "code",
-      "norm_label": ".convertchunk()",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L70"
-    },
-    {
-      "id": "cmd_agproxy_main",
-      "label": "main.go",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "main.go",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L1"
-    },
-    {
-      "id": "cmd_agproxy_main_handleaccounts",
-      "label": "handleAccounts()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "handleaccounts()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L295"
-    },
-    {
-      "id": "cmd_agproxy_main_handledoctor",
-      "label": "handleDoctor()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "handledoctor()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L180"
-    },
-    {
-      "id": "cmd_agproxy_main_handleimage",
-      "label": "handleImage()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "handleimage()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L350"
-    },
-    {
-      "id": "cmd_agproxy_main_handlequota",
-      "label": "handleQuota()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "handlequota()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L273"
-    },
-    {
-      "id": "cmd_agproxy_main_main",
-      "label": "main()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L58"
-    },
-    {
-      "id": "cmd_agproxy_main_printhelp",
-      "label": "printHelp()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "printhelp()",
-      "source_file": "cmd/agproxy/main.go",
-      "source_location": "L27"
     },
     {
       "id": "config_store_addorupdateaccount",
@@ -455,17 +411,6 @@
       "source_location": ""
     },
     {
-      "id": "internal_auth_oauth_ensurevalidtoken",
-      "label": "EnsureValidToken()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "ensurevalidtoken()",
-      "source_file": "internal/auth/oauth.go",
-      "source_location": "L204"
-    },
-    {
       "id": "internal_config_config",
       "label": "config.go",
       "_origin": "ast",
@@ -519,17 +464,6 @@
       "norm_label": "loadstore()",
       "source_file": "internal/config/config.go",
       "source_location": "L44"
-    },
-    {
-      "id": "internal_quota_quota_fetchaccountquota",
-      "label": "FetchAccountQuota()",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "Store",
-      "file_type": "code",
-      "norm_label": "fetchaccountquota()",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L47"
     },
     {
       "id": "flake",
@@ -797,6 +731,17 @@
       "community_name": "Server",
       "file_type": "code",
       "norm_label": "sync.mutex",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "go_type_time_duration",
+      "label": "time.Duration",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "Server",
+      "file_type": "code",
+      "norm_label": "time.duration",
       "source_file": "",
       "source_location": ""
     },
@@ -1139,91 +1084,47 @@
       "file_type": "code",
       "norm_label": "onboarduser()",
       "source_file": "internal/auth/project.go",
-      "source_location": "L136"
+      "source_location": "L113"
     },
     {
-      "id": "go_type_testing_t",
-      "label": "testing.T",
+      "id": "internal_stealth_sanitizer_storethoughtsignature",
+      "label": "StoreThoughtSignature()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "testing.t",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "storethoughtsignature()",
+      "source_file": "internal/stealth/sanitizer.go",
+      "source_location": "L82"
     },
     {
-      "id": "internal_transformer_openai_test",
-      "label": "openai_test.go",
+      "id": "internal_stealth_sanitizer_storetoolcallname",
+      "label": "StoreToolCallName()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "openai_test.go",
-      "source_file": "internal/transformer/openai_test.go",
+      "norm_label": "storetoolcallname()",
+      "source_file": "internal/stealth/sanitizer.go",
+      "source_location": "L105"
+    },
+    {
+      "id": "internal_transformer_sse",
+      "label": "sse.go",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "sse.go",
+      "file_type": "code",
+      "norm_label": "sse.go",
+      "source_file": "internal/transformer/sse.go",
       "source_location": "L1"
-    },
-    {
-      "id": "internal_transformer_openai_test_testopenaitoantigravity_basic",
-      "label": "TestOpenAIToAntigravity_Basic()",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "testing.T",
-      "file_type": "code",
-      "norm_label": "testopenaitoantigravity_basic()",
-      "source_file": "internal/transformer/openai_test.go",
-      "source_location": "L7"
-    },
-    {
-      "id": "internal_transformer_openai_test_testopenaitoantigravity_layarouting",
-      "label": "TestOpenAIToAntigravity_LayaRouting()",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "testing.T",
-      "file_type": "code",
-      "norm_label": "testopenaitoantigravity_layarouting()",
-      "source_file": "internal/transformer/openai_test.go",
-      "source_location": "L178"
-    },
-    {
-      "id": "internal_transformer_openai_test_testopenaitoantigravity_stealthsanitization",
-      "label": "TestOpenAIToAntigravity_StealthSanitization()",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "testing.T",
-      "file_type": "code",
-      "norm_label": "testopenaitoantigravity_stealthsanitization()",
-      "source_file": "internal/transformer/openai_test.go",
-      "source_location": "L106"
-    },
-    {
-      "id": "internal_transformer_openai_test_testopenaitoantigravity_toolcloaking",
-      "label": "TestOpenAIToAntigravity_ToolCloaking()",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "testing.T",
-      "file_type": "code",
-      "norm_label": "testopenaitoantigravity_toolcloaking()",
-      "source_file": "internal/transformer/openai_test.go",
-      "source_location": "L38"
-    },
-    {
-      "id": "internal_transformer_openai_test_testopenaitoantigravity_toolresponseresolution",
-      "label": "TestOpenAIToAntigravity_ToolResponseResolution()",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "testing.T",
-      "file_type": "code",
-      "norm_label": "testopenaitoantigravity_toolresponseresolution()",
-      "source_file": "internal/transformer/openai_test.go",
-      "source_location": "L129"
     },
     {
       "id": "internal_transformer_sse_newssestate",
       "label": "NewSSEState()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "newssestate()",
       "source_file": "internal/transformer/sse.go",
@@ -1234,7 +1135,7 @@
       "label": "sse_test.go",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "sse_test.go",
       "source_file": "internal/transformer/sse_test.go",
@@ -1245,7 +1146,7 @@
       "label": "TestSSEState_ConvertChunk_Text()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "testssestate_convertchunk_text()",
       "source_file": "internal/transformer/sse_test.go",
@@ -1256,7 +1157,7 @@
       "label": "TestSSEState_ConvertChunk_ThinkingAndTools()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "testssestate_convertchunk_thinkingandtools()",
       "source_file": "internal/transformer/sse_test.go",
@@ -1267,7 +1168,7 @@
       "label": "usage_test.go",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "usage_test.go",
       "source_file": "internal/transformer/usage_test.go",
@@ -1278,88 +1179,77 @@
       "label": "TestSSEChunkUsageConversion()",
       "_origin": "ast",
       "community": 4,
-      "community_name": "testing.T",
+      "community_name": "sse.go",
       "file_type": "code",
       "norm_label": "testssechunkusageconversion()",
       "source_file": "internal/transformer/usage_test.go",
       "source_location": "L9"
     },
     {
-      "id": "go_type_context_context",
-      "label": "context.Context",
+      "id": "transformer_openaissechunk",
+      "label": "OpenAISSEChunk",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "context.context",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "openaissechunk",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L39"
     },
     {
-      "id": "go_type_io_readcloser",
-      "label": "io.ReadCloser",
+      "id": "transformer_openaissedelta",
+      "label": "OpenAISSEDelta",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "io.readcloser",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "openaissedelta",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L16"
     },
     {
-      "id": "go_type_net_http_client",
-      "label": "net/http.Client",
+      "id": "transformer_openaitoolcallitem",
+      "label": "OpenAIToolCallItem",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "net/http.client",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "openaitoolcallitem",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L23"
     },
     {
-      "id": "go_type_net_http_header",
-      "label": "net/http.Header",
+      "id": "transformer_openaiusage",
+      "label": "OpenAIUsage",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "net/http.header",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "openaiusage",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L33"
     },
     {
-      "id": "internal_upstream_client",
-      "label": "client.go",
+      "id": "transformer_ssestate",
+      "label": "SSEState",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "client.go",
-      "source_file": "internal/upstream/client.go",
-      "source_location": "L1"
+      "norm_label": "ssestate",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L52"
     },
     {
-      "id": "internal_upstream_client_go_upstream_client",
-      "label": "Client",
+      "id": "transformer_ssestate_convertchunk",
+      "label": ".ConvertChunk()",
       "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
+      "community": 4,
+      "community_name": "sse.go",
       "file_type": "code",
-      "norm_label": "client",
-      "source_file": "internal/upstream/client.go",
-      "source_location": "L21"
-    },
-    {
-      "id": "internal_upstream_client_newclient",
-      "label": "NewClient()",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
-      "file_type": "code",
-      "norm_label": "newclient()",
-      "source_file": "internal/upstream/client.go",
-      "source_location": "L25"
+      "norm_label": ".convertchunk()",
+      "source_file": "internal/transformer/sse.go",
+      "source_location": "L70"
     },
     {
       "id": "internal_upstream_types",
@@ -1382,28 +1272,6 @@
       "norm_label": "antigravitypart",
       "source_file": "internal/upstream/types.go",
       "source_location": "L33"
-    },
-    {
-      "id": "internal_upstream_types_go_upstream_antigravityrequestwrapper",
-      "label": "AntigravityRequestWrapper",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
-      "file_type": "code",
-      "norm_label": "antigravityrequestwrapper",
-      "source_file": "internal/upstream/types.go",
-      "source_location": "L5"
-    },
-    {
-      "id": "transformer_transformresult",
-      "label": "TransformResult",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
-      "file_type": "code",
-      "norm_label": "transformresult",
-      "source_file": "internal/transformer/openai.go",
-      "source_location": "L50"
     },
     {
       "id": "upstream_antigravityblob",
@@ -1483,28 +1351,6 @@
       "source_location": "L57"
     },
     {
-      "id": "upstream_client_generatecontent",
-      "label": ".GenerateContent()",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
-      "file_type": "code",
-      "norm_label": ".generatecontent()",
-      "source_file": "internal/upstream/client.go",
-      "source_location": "L82"
-    },
-    {
-      "id": "upstream_client_streamgeneratecontent",
-      "label": ".StreamGenerateContent()",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "types.go",
-      "file_type": "code",
-      "norm_label": ".streamgeneratecontent()",
-      "source_file": "internal/upstream/client.go",
-      "source_location": "L56"
-    },
-    {
       "id": "upstream_googlestreamchunk",
       "label": "GoogleStreamChunk",
       "_origin": "ast",
@@ -1527,59 +1373,125 @@
       "source_location": "L23"
     },
     {
-      "id": "internal_transformer_sse",
-      "label": "sse.go",
+      "id": "go_type_context_context",
+      "label": "context.Context",
       "_origin": "ast",
       "community": 6,
-      "community_name": "sse.go",
+      "community_name": "Client",
       "file_type": "code",
-      "norm_label": "sse.go",
-      "source_file": "internal/transformer/sse.go",
+      "norm_label": "context.context",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "go_type_io_readcloser",
+      "label": "io.ReadCloser",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": "io.readcloser",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "go_type_net_http_client",
+      "label": "net/http.Client",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": "net/http.client",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "go_type_net_http_header",
+      "label": "net/http.Header",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": "net/http.header",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "internal_upstream_client",
+      "label": "client.go",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": "client.go",
+      "source_file": "internal/upstream/client.go",
       "source_location": "L1"
     },
     {
-      "id": "transformer_openaissechunk",
-      "label": "OpenAISSEChunk",
+      "id": "internal_upstream_client_go_upstream_client",
+      "label": "Client",
       "_origin": "ast",
       "community": 6,
-      "community_name": "sse.go",
+      "community_name": "Client",
       "file_type": "code",
-      "norm_label": "openaissechunk",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L39"
+      "norm_label": "client",
+      "source_file": "internal/upstream/client.go",
+      "source_location": "L21"
     },
     {
-      "id": "transformer_openaissedelta",
-      "label": "OpenAISSEDelta",
+      "id": "internal_upstream_client_newclient",
+      "label": "NewClient()",
       "_origin": "ast",
       "community": 6,
-      "community_name": "sse.go",
+      "community_name": "Client",
       "file_type": "code",
-      "norm_label": "openaissedelta",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L16"
+      "norm_label": "newclient()",
+      "source_file": "internal/upstream/client.go",
+      "source_location": "L25"
     },
     {
-      "id": "transformer_openaitoolcallitem",
-      "label": "OpenAIToolCallItem",
+      "id": "internal_upstream_types_go_upstream_antigravityrequestwrapper",
+      "label": "AntigravityRequestWrapper",
       "_origin": "ast",
       "community": 6,
-      "community_name": "sse.go",
+      "community_name": "Client",
       "file_type": "code",
-      "norm_label": "openaitoolcallitem",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L23"
+      "norm_label": "antigravityrequestwrapper",
+      "source_file": "internal/upstream/types.go",
+      "source_location": "L5"
     },
     {
-      "id": "transformer_openaiusage",
-      "label": "OpenAIUsage",
+      "id": "transformer_transformresult",
+      "label": "TransformResult",
       "_origin": "ast",
       "community": 6,
-      "community_name": "sse.go",
+      "community_name": "Client",
       "file_type": "code",
-      "norm_label": "openaiusage",
-      "source_file": "internal/transformer/sse.go",
-      "source_location": "L33"
+      "norm_label": "transformresult",
+      "source_file": "internal/transformer/openai.go",
+      "source_location": "L50"
+    },
+    {
+      "id": "upstream_client_generatecontent",
+      "label": ".GenerateContent()",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": ".generatecontent()",
+      "source_file": "internal/upstream/client.go",
+      "source_location": "L82"
+    },
+    {
+      "id": "upstream_client_streamgeneratecontent",
+      "label": ".StreamGenerateContent()",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "Client",
+      "file_type": "code",
+      "norm_label": ".streamgeneratecontent()",
+      "source_file": "internal/upstream/client.go",
+      "source_location": "L56"
     },
     {
       "id": "auth_allowedtier",
@@ -1604,17 +1516,6 @@
       "source_location": "L17"
     },
     {
-      "id": "auth_currenttierinfo",
-      "label": "CurrentTierInfo",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "project.go",
-      "file_type": "code",
-      "norm_label": "currenttierinfo",
-      "source_file": "internal/auth/project.go",
-      "source_location": "L38"
-    },
-    {
       "id": "auth_loadcodeassistrequest",
       "label": "LoadCodeAssistRequest",
       "_origin": "ast",
@@ -1634,7 +1535,7 @@
       "file_type": "code",
       "norm_label": "loadcodeassistresponse",
       "source_file": "internal/auth/project.go",
-      "source_location": "L45"
+      "source_location": "L38"
     },
     {
       "id": "auth_onboarduserrequest",
@@ -1645,7 +1546,7 @@
       "file_type": "code",
       "norm_label": "onboarduserrequest",
       "source_file": "internal/auth/project.go",
-      "source_location": "L51"
+      "source_location": "L47"
     },
     {
       "id": "auth_onboarduserresponse",
@@ -1656,7 +1557,7 @@
       "file_type": "code",
       "norm_label": "onboarduserresponse",
       "source_file": "internal/auth/project.go",
-      "source_location": "L56"
+      "source_location": "L52"
     },
     {
       "id": "internal_auth_project",
@@ -1670,17 +1571,6 @@
       "source_location": "L1"
     },
     {
-      "id": "internal_auth_project_formattiername",
-      "label": "FormatTierName()",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "project.go",
-      "file_type": "code",
-      "norm_label": "formattiername()",
-      "source_file": "internal/auth/project.go",
-      "source_location": "L117"
-    },
-    {
       "id": "internal_auth_project_loadprojectandtier",
       "label": "LoadProjectAndTier()",
       "_origin": "ast",
@@ -1689,95 +1579,205 @@
       "file_type": "code",
       "norm_label": "loadprojectandtier()",
       "source_file": "internal/auth/project.go",
-      "source_location": "L61"
+      "source_location": "L57"
     },
     {
-      "id": "go_type_time_duration",
-      "label": "time.Duration",
+      "id": "cmd_agproxy_main",
+      "label": "main.go",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
-      "norm_label": "time.duration",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "main.go",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L1"
+    },
+    {
+      "id": "cmd_agproxy_main_handleaccounts",
+      "label": "handleAccounts()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "handleaccounts()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L295"
+    },
+    {
+      "id": "cmd_agproxy_main_handledoctor",
+      "label": "handleDoctor()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "handledoctor()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L180"
+    },
+    {
+      "id": "cmd_agproxy_main_handleimage",
+      "label": "handleImage()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "handleimage()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L350"
+    },
+    {
+      "id": "cmd_agproxy_main_handlequota",
+      "label": "handleQuota()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "handlequota()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L273"
+    },
+    {
+      "id": "cmd_agproxy_main_main",
+      "label": "main()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L58"
+    },
+    {
+      "id": "cmd_agproxy_main_printhelp",
+      "label": "printHelp()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "printhelp()",
+      "source_file": "cmd/agproxy/main.go",
+      "source_location": "L27"
+    },
+    {
+      "id": "internal_auth_oauth_ensurevalidtoken",
+      "label": "EnsureValidToken()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "ensurevalidtoken()",
+      "source_file": "internal/auth/oauth.go",
+      "source_location": "L204"
     },
     {
       "id": "internal_quota_quota",
       "label": "quota.go",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
       "norm_label": "quota.go",
       "source_file": "internal/quota/quota.go",
       "source_location": "L1"
     },
     {
-      "id": "internal_quota_quota_formattimeremaining",
-      "label": "formatTimeRemaining()",
+      "id": "internal_quota_quota_fetchaccountquota",
+      "label": "FetchAccountQuota()",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
-      "norm_label": "formattimeremaining()",
+      "norm_label": "fetchaccountquota()",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L206"
+      "source_location": "L55"
+    },
+    {
+      "id": "internal_quota_quota_fmtquotapair",
+      "label": "fmtQuotaPair()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "fmtquotapair()",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L182"
     },
     {
       "id": "internal_quota_quota_printquotatable",
       "label": "PrintQuotaTable()",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
       "norm_label": "printquotatable()",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L219"
+      "source_location": "L145"
     },
     {
-      "id": "internal_quota_quota_renderbar",
-      "label": "renderBar()",
+      "id": "internal_quota_quota_renderprogressbar",
+      "label": "renderProgressBar()",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
-      "norm_label": "renderbar()",
+      "norm_label": "renderprogressbar()",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L251"
+      "source_location": "L194"
+    },
+    {
+      "id": "internal_quota_quota_truncate",
+      "label": "truncate()",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "truncate()",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L214"
+    },
+    {
+      "id": "quota_fetchavailablemodelsresponse",
+      "label": "FetchAvailableModelsResponse",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "fetchavailablemodelsresponse",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L17"
+    },
+    {
+      "id": "quota_modelquotaitem",
+      "label": "ModelQuotaItem",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "main",
+      "file_type": "code",
+      "norm_label": "modelquotaitem",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L21"
     },
     {
       "id": "quota_quotareport",
       "label": "QuotaReport",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
       "norm_label": "quotareport",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L40"
+      "source_location": "L44"
     },
     {
       "id": "quota_retrieveuserquotasummaryresponse",
       "label": "RetrieveUserQuotaSummaryResponse",
       "_origin": "ast",
       "community": 8,
-      "community_name": "quota.go",
+      "community_name": "main",
       "file_type": "code",
       "norm_label": "retrieveuserquotasummaryresponse",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L17"
-    },
-    {
-      "id": "quota_singlequotaitem",
-      "label": "SingleQuotaItem",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "quota.go",
-      "file_type": "code",
-      "norm_label": "singlequotaitem",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L31"
+      "source_location": "L30"
     },
     {
       "id": "internal_router_laya",
@@ -2409,18 +2409,6 @@
       "weight": 1.0
     },
     {
-      "source": "internal_auth_project_loadprojectandtier",
-      "target": "internal_auth_project_formattiername",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "internal/auth/project.go",
-      "source_location": "L111",
-      "weight": 1.0
-    },
-    {
       "source": "internal_config_config_loadstore",
       "target": "internal_config_config_getconfigdir",
       "relation": "calls",
@@ -2434,18 +2422,6 @@
     },
     {
       "source": "internal_quota_quota_fetchaccountquota",
-      "target": "internal_quota_quota_formattimeremaining",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L118",
-      "weight": 1.0
-    },
-    {
-      "source": "internal_quota_quota_fetchaccountquota",
       "target": "internal_auth_oauth_ensurevalidtoken",
       "relation": "calls",
       "_origin": "ast",
@@ -2453,31 +2429,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L48",
-      "weight": 1.0
-    },
-    {
-      "source": "internal_quota_quota_fetchaccountquota",
-      "target": "internal_auth_project_loadprojectandtier",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L62",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
       "source": "internal_quota_quota_printquotatable",
-      "target": "internal_quota_quota_renderbar",
+      "target": "internal_quota_quota_fmtquotapair",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L228",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "internal_quota_quota_printquotatable",
+      "target": "internal_quota_quota_truncate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "internal_quota_quota_printquotatable",
+      "target": "internal_quota_quota_renderprogressbar",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L174",
       "weight": 1.0
     },
     {
@@ -2861,19 +2849,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "internal/auth/project.go",
-      "source_location": "L47",
-      "weight": 1.0
-    },
-    {
-      "source": "auth_loadcodeassistresponse",
-      "target": "auth_currenttierinfo",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "internal/auth/project.go",
-      "source_location": "L48",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -2885,7 +2861,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "internal/auth/project.go",
-      "source_location": "L53",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -2997,27 +2973,15 @@
       "weight": 1.0
     },
     {
-      "source": "quota_quotareport",
-      "target": "quota_singlequotaitem",
+      "source": "quota_fetchavailablemodelsresponse",
+      "target": "quota_modelquotaitem",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L44",
-      "weight": 1.0
-    },
-    {
-      "source": "quota_singlequotaitem",
-      "target": "go_type_time_time",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L37",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -3365,7 +3329,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L47",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -3377,19 +3341,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L47",
-      "weight": 1.0
-    },
-    {
-      "source": "internal_quota_quota_formattimeremaining",
-      "target": "go_type_time_duration",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "internal/quota/quota.go",
-      "source_location": "L206",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -3401,7 +3353,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L219",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -3881,7 +3833,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "internal/quota/quota.go",
-      "source_location": "L47",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -4250,24 +4202,13 @@
     },
     {
       "source": "internal_auth_project",
-      "target": "internal_auth_project_formattiername",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "internal/auth/project.go",
-      "source_location": "L117",
-      "weight": 1.0
-    },
-    {
-      "source": "internal_auth_project",
       "target": "internal_auth_project_onboarduser",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/auth/project.go",
-      "source_location": "L136",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -4305,7 +4246,7 @@
     },
     {
       "source": "internal_auth_project",
-      "target": "auth_currenttierinfo",
+      "target": "auth_loadcodeassistresponse",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -4316,24 +4257,13 @@
     },
     {
       "source": "internal_auth_project",
-      "target": "auth_loadcodeassistresponse",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "internal/auth/project.go",
-      "source_location": "L45",
-      "weight": 1.0
-    },
-    {
-      "source": "internal_auth_project",
       "target": "auth_onboarduserrequest",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/auth/project.go",
-      "source_location": "L51",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -4344,7 +4274,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/auth/project.go",
-      "source_location": "L56",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -4355,7 +4285,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/auth/project.go",
-      "source_location": "L61",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -4404,7 +4334,18 @@
     },
     {
       "source": "internal_quota_quota",
-      "target": "quota_retrieveuserquotasummaryresponse",
+      "target": "internal_quota_quota_printquotatable",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "internal_quota_quota",
+      "target": "quota_fetchavailablemodelsresponse",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -4415,46 +4356,57 @@
     },
     {
       "source": "internal_quota_quota",
-      "target": "internal_quota_quota_formattimeremaining",
+      "target": "internal_quota_quota_fmtquotapair",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L206",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
       "source": "internal_quota_quota",
-      "target": "internal_quota_quota_printquotatable",
+      "target": "internal_quota_quota_renderprogressbar",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L219",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
       "source": "internal_quota_quota",
-      "target": "internal_quota_quota_renderbar",
+      "target": "quota_modelquotaitem",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L251",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
       "source": "internal_quota_quota",
-      "target": "quota_singlequotaitem",
+      "target": "internal_quota_quota_truncate",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L31",
+      "source_location": "L214",
+      "weight": 1.0
+    },
+    {
+      "source": "internal_quota_quota",
+      "target": "quota_retrieveuserquotasummaryresponse",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "internal/quota/quota.go",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -4465,7 +4417,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L40",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -4476,7 +4428,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/quota/quota.go",
-      "source_location": "L47",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -5658,5 +5610,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a804f2382a152bac199be65a1f3b1239c7d8942d"
+  "built_at_commit": "8aced3b812ecb92a0ba1ac9e5cb4bddd53a63af5"
 }

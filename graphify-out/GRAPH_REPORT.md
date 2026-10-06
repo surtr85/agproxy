@@ -1,16 +1,16 @@
 # Graph Report - agproxy  (2026-10-07)
 
 ## Corpus Check
-- 21 files · ~12,439 words
+- 22 files · ~14,513 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 170 nodes · 329 edges · 12 communities (11 shown, 1 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
+- 174 nodes · 339 edges · 13 communities (12 shown, 1 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 12 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c47fbc91`
+- Built from commit: `dfed9bbc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -20,23 +20,24 @@
 - Server
 - oauth.go
 - sse.go
+- Client
 - types.go
 - project.go
 - main
 - RouteWithLayaContext
 - flake.nix
 - github.com/surtr85/agproxy
-- agproxy 🚀
+- README.md
 
 ## God Nodes (most connected - your core abstractions)
 1. `Store` - 25 edges
-2. `OpenAIToAntigravity()` - 19 edges
-3. `Server` - 17 edges
+2. `Server` - 19 edges
+3. `OpenAIToAntigravity()` - 19 edges
 4. `handleLogin()` - 10 edges
 5. `main()` - 9 edges
 6. `EnsureValidToken()` - 9 edges
 7. `Account` - 9 edges
-8. `FetchAccountQuota()` - 8 edges
+8. `FetchAccountQuota()` - 9 edges
 9. `handleImage()` - 7 edges
 10. `GetClientID()` - 6 edges
 
@@ -55,18 +56,18 @@
 ## Import Cycles
 - None detected.
 
-## Communities (12 total, 1 thin omitted)
+## Communities (13 total, 1 thin omitted)
 
 ### Community 0 - "OpenAIToAntigravity"
-Cohesion: 0.16
-Nodes (21): testing.T, BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature(), GetToolCallName() (+13 more)
+Cohesion: 0.14
+Nodes (22): testing.T, TestDashboardEndpoints(), BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature() (+14 more)
 
 ### Community 1 - "Store"
 Cohesion: 0.25
 Nodes (6): sync.RWMutex, time.Time, GetConfigDir(), Account, Store, LoadStore()
 
 ### Community 2 - "Server"
-Cohesion: 0.23
+Cohesion: 0.22
 Nodes (7): net/http.Flusher, net/http.Request, net/http.ResponseWriter, sync.Mutex, NewServer(), ParseRetryDelay(), Server
 
 ### Community 3 - "oauth.go"
@@ -77,9 +78,13 @@ Nodes (14): TokenResponse, UserInfo, handleLogin(), BuildAuthURL(), ExchangeCode
 Cohesion: 0.18
 Nodes (11): StoreThoughtSignature(), StoreToolCallName(), NewSSEState(), TestSSEState_ConvertChunk_Text(), TestSSEState_ConvertChunk_ThinkingAndTools(), TestSSEChunkUsageConversion(), OpenAISSEChunk, OpenAISSEDelta (+3 more)
 
-### Community 5 - "types.go"
-Cohesion: 0.16
-Nodes (18): context.Context, io.ReadCloser, net/http.Client, net/http.Header, Client, NewClient(), AntigravityPart, AntigravityRequestWrapper (+10 more)
+### Community 5 - "Client"
+Cohesion: 0.25
+Nodes (8): context.Context, io.ReadCloser, net/http.Client, net/http.Header, Client, NewClient(), AntigravityRequestWrapper, TransformResult
+
+### Community 6 - "types.go"
+Cohesion: 0.36
+Nodes (10): AntigravityPart, AntigravityBlob, AntigravityContent, AntigravityFnCall, AntigravityFnResp, AntigravityFunctionDecl, AntigravityRequest, AntigravityTool (+2 more)
 
 ### Community 7 - "project.go"
 Cohesion: 0.29
@@ -97,27 +102,29 @@ Nodes (6): RouteWithLaya(), RouteWithLayaContext(), TestRouteWithLayaContext_Tri
 Cohesion: 0.50
 Nodes (3): agproxy.nix, pkgs.buildGoModule, pkgs.mkShell
 
-### Community 12 - "agproxy 🚀"
+### Community 12 - "README.md"
 Cohesion: 0.14
-Nodes (13): 1. Build & Run with Nix, 2. Log in with Google Antigravity, 3. Check Live Quota, 4. Start the Server, agproxy 🚀, cURL Test, Cursor / Continue / Cline / Zed, 🔌 Editor & Client Configuration (+5 more)
+Nodes (13): 1. Build & Run with Nix, 2. Log in with Google Antigravity, 3. Check Live Quota, 4. Start the Server, cURL Test, Cursor / Continue / Cline / Zed, 🔌 Editor & Client Configuration, ✨ Features (+5 more)
 
 ## Knowledge Gaps
-- **17 isolated node(s):** `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell`, `github.com/surtr85/agproxy`, `OnboardUserResponse` (+12 more)
+- **18 isolated node(s):** `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell`, `github.com/surtr85/agproxy`, `OnboardUserResponse` (+13 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `types.go`?**
-  _High betweenness centrality (0.259) - this node is a cross-community bridge._
+- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `Client`?**
+  _High betweenness centrality (0.245) - this node is a cross-community bridge._
 - **Why does `Store` connect `Store` to `main`, `Server`, `oauth.go`?**
-  _High betweenness centrality (0.218) - this node is a cross-community bridge._
-- **Why does `Server` connect `Server` to `Store`, `types.go`?**
-  _High betweenness centrality (0.192) - this node is a cross-community bridge._
+  _High betweenness centrality (0.210) - this node is a cross-community bridge._
+- **Why does `Server` connect `Server` to `Store`, `Client`?**
+  _High betweenness centrality (0.187) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `OpenAIToAntigravity()` (e.g. with `TestOpenAIToAntigravity_Basic()` and `TestOpenAIToAntigravity_LayaRouting()`) actually correct?**
   _`OpenAIToAntigravity()` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell` to the rest of the system?**
-  _17 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `agproxy 🚀` be split into smaller, more focused modules?**
+  _18 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `OpenAIToAntigravity` be split into smaller, more focused modules?**
+  _Cohesion score 0.14153846153846153 - nodes in this community are weakly interconnected._
+- **Should `README.md` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._

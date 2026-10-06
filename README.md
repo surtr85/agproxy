@@ -1,7 +1,29 @@
-# agproxy 🚀
-> Ultra-lightweight, single-binary Go reverse proxy for Google Antigravity models with stealth anti-detection, multi-account rotation, live quota monitoring, and an unfiltered research model.
+```
+   ___   _________  _______  ______  ____  __
+  / _ | / ___/ __ \/ _ \ _ \/ __/\ \/ /\ \/ /
+ / __ |/ (_ / /_/ / ___/   / _/   \  /  \  / 
+/_/ |_|\___/\____/_/  /_/|_\___/  /_/   /_/  
+```
+> **Ultra-lightweight, single-binary Go reverse proxy for Google Antigravity with stealth anti-detection, multi-account rotation, Google AI Pro quota monitoring, Laya System-1 dynamic steering, Nano Banana 2 image generation, and a cyberpunk Web Mission Control.**
 
-`agproxy` connects directly to Google Cloud Code's internal Antigravity endpoints (`daily-cloudcode-pa.googleapis.com`) using official Antigravity OAuth client credentials, translating requests back and forth to standard **OpenAI-compatible APIs (`/v1/chat/completions` and `/v1/models`)**.
+[![NixOS Flake](https://img.shields.io/badge/NixOS-Flake-blue?logo=nixos)](https://nixos.org)
+[![Go Report](https://img.shields.io/badge/Go-1.23-00ADD8?logo=go)](https://golang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 🖥️ Web Mission Control (`http://localhost:8080/dashboard`)
+
+`agproxy` features an embedded, high-density, cyberpunk Web Mission Control dashboard with:
+- **Zero AI Slop / Zero External Bloat**: Glassmorphism dark theme, JetBrains Mono typography, pure embedded HTML/CSS/JS.
+- **Live 4-Bucket Quota Monitors**: Real-time progress gauges and reset timers matching the official Antigravity UI:
+  - `Gemini (Flash / Pro)` (1,000 units shared bucket)
+  - `Claude (Sonnet / Opus)` (1,000 units)
+  - `GPT-OSS 120B (Medium)` (1,000 units)
+  - `Gemini 3.1 Flash Image` (Shared Gemini bucket)
+- **Active Primary & Auto-Failover Indicator**: Visual cues showing which account is active and cooldown timers for rate-limited accounts.
+- **Interactive Playground**: Test prompt routing, inspect latency, model assignments, and token usage on the fly.
+- **Telemetry Stream**: Live SSE logs tracking requests and Laya System-1 routing choices.
 
 ---
 
@@ -25,6 +47,10 @@
   - Zero manual tier selection: automatically dispatches to the optimal Google model based on domain classification and difficulty scoring with sub-200ms response time and graceful fallback.
 - **Live Quota Inspector**:
   - `agproxy quota` prints a terminal ASCII table with 5-hour and weekly remaining quota percentages and progress bars for all accounts.
+- **Diagnostic Doctor (`agproxy doctor`)**:
+  - One-click health check verifying OAuth tokens, Google Cloud upstream reachability, Laya System-1 daemon status, and local port bindings.
+- **Cyberpunk Web Dashboard (`/dashboard`)**:
+  - Real-time web UI showing account pools, Google AI Pro tier status, live 4-bucket quotas, and an interactive prompt playground.
 
 ---
 

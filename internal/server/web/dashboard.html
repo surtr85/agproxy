@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>agproxy // Mission Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(16, 19, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --card-hover: rgba(255, 255, 255, 0.12);
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #64748b;
+      --text-dim: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding: 24px;
+    }
+
+    code, pre, .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 20px;
+    }
+
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 25px var(--accent-glow);
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .logo-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .version-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--cyan);
+      font-weight: 500;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* Metric Bar */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .metric-card:hover {
+      border-color: var(--card-hover);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Accounts Section */
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .accounts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    .account-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-card.active-account {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.08);
+    }
+
+    .account-card.active-account::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1, #06b6d4);
+    }
+
+    .account-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .account-email {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .active-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .account-tier {
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .quotas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quota-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .quota-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .quota-name {
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .quota-stat {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .quota-stat b {
+      color: var(--text-main);
+    }
+
+    .bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    .bar-fill.high {
+      background: linear-gradient(90deg, #10b981, #059669);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .bar-fill.med {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+    }
+
+    .bar-fill.low {
+      background: linear-gradient(90deg, #f43f5e, #e11d48);
+      box-shadow: 0 0 8px rgba(244, 63, 94, 0.3);
+    }
+
+    /* Live Playground & Tools */
+    .dashboard-lower {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-lower {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel h2 {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .prompt-box {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 85px;
+      outline: none;
+    }
+
+    .prompt-box:focus {
+      border-color: var(--accent);
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .select-model {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .output-box {
+      background: #050608;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Logs & Telemetry feed */
+    .telemetry-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .log-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .log-time {
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+
+    .log-tag {
+      font-weight: 600;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .tag-laya { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+    .tag-200 { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag-429 { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+
+    footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-badge">
+        <div class="logo-icon">▲</div>
+        <div class="logo-text">
+          <h1>agproxy <span class="version-tag mono" id="appVersion">v0.1.0</span></h1>
+          <p>Stealth Google Antigravity Gateway & Multi-Account Orchestrator</p>
+        </div>
+      </div>
+      <div class="status-pill mono">
+        <span class="pulse-dot"></span>
+        <span id="gatewayStatus">ONLINE // PORT 8080</span>
+      </div>
+    </header>
+
+    <!-- Metrics Strip -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Active Pool</div>
+        <div class="metric-value mono" id="metricAccounts">3 <span class="metric-sub">accounts</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Laya System-1</div>
+        <div class="metric-value mono" style="color: #818cf8;" id="metricLaya">ONLINE <span class="metric-sub">&lt;50ms</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Active Primary</div>
+        <div class="metric-value mono" style="font-size: 16px; word-break: break-all;" id="metricActiveEmail">loading...</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Routing Fleet</div>
+        <div class="metric-value mono" style="color: var(--cyan);">100% <span class="metric-sub">Gemini + 3P</span></div>
+      </div>
+    </div>
+
+    <!-- Accounts & Quotas Section -->
+    <section>
+      <div class="section-title">
+        <span>⚡ Account Fleet &amp; 4-Bucket Quota Monitors</span>
+      </div>
+      <div class="accounts-grid" id="accountsGrid">
+        <div style="color: var(--text-muted); padding: 20px;">Fetching live account quotas...</div>
+      </div>
+    </section>
+
+    <!-- Lower Section: Live Testing Playground & Recent Telemetry -->
+    <div class="dashboard-lower">
+      <!-- Playground -->
+      <div class="panel">
+        <h2><span>🎯</span> Live Prompt Playground</h2>
+        <textarea class="prompt-box mono" id="testPrompt" placeholder="Test a query (e.g. 'Solve Dijkstra algorithm in Go' or 'ping')...">ping</textarea>
+        <div class="panel-actions">
+          <select class="select-model mono" id="modelSelect">
+            <option value="laya">laya (System-1 Autonomous)</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+            <option value="gemini-3.1-pro">gemini-3.1-pro</option>
+            <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+          </select>
+          <button class="btn" id="btnSend">
+            <span>Send Request</span> →
+          </button>
+        </div>
+        <div class="output-box mono" id="testOutput">Response output will appear here...</div>
+      </div>
+
+      <!-- Live Activity Telemetry -->
+      <div class="panel">
+        <h2><span>📡</span> Live Routing Telemetry</h2>
+        <div class="telemetry-feed mono" id="telemetryFeed">
+          <div class="log-row">
+            <span class="log-time" id="initTime">00:00:00</span>
+            <span class="log-tag tag-laya">LAYA</span>
+            <span>System-1 connected on port 8089 (ModernBERT Vulkan)</span>
+          </div>
+          <div class="log-row">
+            <span class="log-time">00:00:00</span>
+            <span class="log-tag tag-200">PROXY</span>
+            <span>All 3 Google AI Pro accounts provisioned & verified</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div>Developed for Amadeus Workstation &bull; NixOS Declarative AI Subsystem</div>
+      <div class="mono" style="color: var(--cyan);">Surtr85 / agproxy</div>
+    </footer>
+  </div>
+
+  <script>
+    const nowStr = () => new Date().toLocaleTimeString();
+    document.getElementById('initTime').innerText = nowStr();
+
+    async function fetchDashboard() {
+      try {
+        const res = await fetch('/api/dashboard');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        document.getElementById('metricAccounts').innerHTML = `${data.accounts.length} <span class="metric-sub">accounts</span>`;
+        document.getElementById('metricActiveEmail').innerText = data.active_email || 'None';
+        document.getElementById('appVersion').innerText = `v${data.version}`;
+
+        const grid = document.getElementById('accountsGrid');
+        grid.innerHTML = '';
+
+        data.accounts.forEach(acc => {
+          const isActive = acc.email === data.active_email;
+          const card = document.createElement('div');
+          card.className = `account-card ${isActive ? 'active-account' : ''}`;
+
+          let quotasHtml = '';
+          (acc.quotas || []).forEach(q => {
+            let fillClass = 'high';
+            if (q.percentage < 60) fillClass = 'med';
+            if (q.percentage < 25) fillClass = 'low';
+
+            quotasHtml += `
+              <div class="quota-item">
+                <div class="quota-meta">
+                  <span class="quota-name mono">${q.name}</span>
+                  <span class="quota-stat mono"><b>${q.used}</b> / ${q.total} (${q.percentage}%) &bull; ${q.reset_in}</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar-fill ${fillClass}" style="width: ${q.percentage}%"></div>
+                </div>
+              </div>
+            `;
+          });
+
+          card.innerHTML = `
+            <div class="account-head">
+              <div>
+                <div class="account-email mono">
+                  ${acc.email}
+                  ${isActive ? '<span class="active-badge">ACTIVE</span>' : ''}
+                </div>
+                <div class="account-tier mono">${acc.tier}</div>
+              </div>
+            </div>
+            <div class="quotas-list">
+              ${quotasHtml}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } catch (e) {
+        console.error("Dashboard poll failed", e);
+      }
+    }
+
+    // Live Playground interaction
+    document.getElementById('btnSend').addEventListener('click', async () => {
+      const prompt = document.getElementById('testPrompt').value;
+      const model = document.getElementById('modelSelect').value;
+      const out = document.getElementById('testOutput');
+      const feed = document.getElementById('telemetryFeed');
+
+      out.innerText = 'Dispatching to agproxy...';
+
+      try {
+        const startTime = Date.now();
+        const res = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+
+        const elapsed = Date.now() - startTime;
+        const json = await res.json();
+        const content = json.choices?.[0]?.message?.content || JSON.stringify(json, null, 2);
+        out.innerText = content;
+
+        // Append log
+        const log = document.createElement('div');
+        log.className = 'log-row';
+        log.innerHTML = `
+          <span class="log-time">${nowStr()}</span>
+          <span class="log-tag tag-200">200 OK</span>
+          <span>Model: <b>${model}</b> (${elapsed}ms) &bull; Tokens: ${json.usage?.total_tokens || 'N/A'}</span>
+        `;
+        feed.prepend(log);
+
+        // Refresh stats
+        fetchDashboard();
+      } catch (err) {
+        out.innerText = `Error: ${err}`;
+      }
+    });
+
+    // Initial and periodic refresh
+    fetchDashboard();
+    setInterval(fetchDashboard, 15000);
+  </script>
+</body>
+</html>

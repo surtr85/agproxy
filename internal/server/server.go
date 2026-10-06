@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/subtle"
+	_ "embed"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -19,10 +20,14 @@ import (
 
 	"github.com/surtr85/agproxy/internal/auth"
 	"github.com/surtr85/agproxy/internal/config"
+	"github.com/surtr85/agproxy/internal/quota"
 	"github.com/surtr85/agproxy/internal/stealth"
 	"github.com/surtr85/agproxy/internal/transformer"
 	"github.com/surtr85/agproxy/internal/upstream"
 )
+
+//go:embed web/dashboard.html
+var dashboardHTML []byte
 
 type Server struct {
 	store           *config.Store
@@ -86,6 +91,8 @@ func (s *Server) acquireAccountSlot(email string) func() {
 
 func (s *Server) Start() error {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/dashboard", s.handleDashboard)
+	mux.HandleFunc("/api/dashboard", s.handleAPIDashboard)
 	mux.HandleFunc("/v1/chat/completions", s.handleChatCompletions)
 	mux.HandleFunc("/v1/images/generations", s.handleImageGenerations)
 	mux.HandleFunc("/v1/images/", s.handleGetImage)
@@ -95,8 +102,56 @@ func (s *Server) Start() error {
 
 	addr := fmt.Sprintf("%s:%d", s.host, s.port)
 	log.Printf("[agproxy] Listening on http://%s", addr)
+	log.Printf("[agproxy] Web Mission Control: http://%s/dashboard", addr)
 	log.Printf("[agproxy] Ready for OpenAI-compatible clients (Cursor, Cline, Zed, Claude Code)")
 	return http.ListenAndServe(addr, mux)
+}
+
+func (s *Server) handleDashboard(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(dashboardHTML)
+}
+
+func (s *Server) handleAPIDashboard(w http.ResponseWriter, r *http.Request) {
+	accounts := s.store.GetAllAccounts()
+	active := s.store.GetActiveAccount()
+	activeEmail := ""
+	if active != nil {
+		activeEmail = active.Email
+	}
+
+	type AccountDTO struct {
+		Email   string             `json:"email"`
+		Tier    string             `json:"tier"`
+		Quotas  []quota.SingleQuotaItem `json:"quotas"`
+		Blocked bool               `json:"blocked"`
+	}
+
+	var dtoList []AccountDTO
+	for _, acc := range accounts {
+		dto := AccountDTO{
+			Email:   acc.Email,
+			Tier:    acc.TierID,
+			Blocked: !acc.BlockedUntil.IsZero() && acc.BlockedUntil.After(time.Now()),
+		}
+
+		if rep, err := quota.FetchAccountQuota(acc, s.store); err == nil && rep != nil {
+			if rep.TierID != "" {
+				dto.Tier = rep.TierID
+			}
+			dto.Quotas = rep.Items
+		}
+		dtoList = append(dtoList, dto)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"version":      "0.1.0",
+		"active_email": activeEmail,
+		"accounts":     dtoList,
+		"timestamp":    time.Now().Unix(),
+	})
 }
 
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {

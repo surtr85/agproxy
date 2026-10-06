@@ -1,8 +1,8 @@
 {
   "cmd/agproxy/main.go": {
-    "mtime": 1791327840.8309956,
-    "seen": 1791327891.2389107,
-    "ast_hash": "d364a0d31335c50f9003661f4867646a",
+    "mtime": 1791328936.2625291,
+    "seen": 1791328989.0960975,
+    "ast_hash": "43c510667c4fc55663b6c3650f9541a8",
     "semantic_hash": ""
   },
   "flake.nix": {
@@ -30,9 +30,9 @@
     "semantic_hash": "b9eb151d97e9c9786dc59024bda185fc"
   },
   "internal/auth/project.go": {
-    "mtime": 1791328513.5458457,
-    "seen": 1791328604.1972086,
-    "ast_hash": "795c0423022873342d4af6f310c28b05",
+    "mtime": 1791328890.2839367,
+    "seen": 1791328989.0961132,
+    "ast_hash": "5e918b94163b2ff07baf4b38fcf63f6a",
     "semantic_hash": ""
   },
   "internal/config/config.go": {

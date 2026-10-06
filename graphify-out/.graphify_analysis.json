@@ -1,0 +1,322 @@
+{
+  "communities": {
+    "0": [
+      "go_type_testing_t",
+      "internal_stealth_sanitizer",
+      "internal_stealth_sanitizer_buildiderequestid",
+      "internal_stealth_sanitizer_cleanjsonschema",
+      "internal_stealth_sanitizer_cleanschemarecursive",
+      "internal_stealth_sanitizer_derivesessionid",
+      "internal_stealth_sanitizer_formatuuid",
+      "internal_stealth_sanitizer_getthoughtsignature",
+      "internal_stealth_sanitizer_gettoolcallname",
+      "internal_stealth_sanitizer_sanitizeprompttext",
+      "internal_transformer_openai",
+      "internal_transformer_openai_extractmessageparts",
+      "internal_transformer_openai_extracttext",
+      "internal_transformer_openai_openaitoantigravity",
+      "internal_transformer_openai_test",
+      "internal_transformer_openai_test_testopenaitoantigravity_basic",
+      "internal_transformer_openai_test_testopenaitoantigravity_layarouting",
+      "internal_transformer_openai_test_testopenaitoantigravity_stealthsanitization",
+      "internal_transformer_openai_test_testopenaitoantigravity_toolcloaking",
+      "internal_transformer_openai_test_testopenaitoantigravity_toolresponseresolution",
+      "transformer_openaichatrequest",
+      "transformer_openaimessage",
+      "transformer_openaitool",
+      "transformer_openaitoolcall",
+      "transformer_transformresult"
+    ],
+    "1": [
+      "cmd_agproxy_main",
+      "cmd_agproxy_main_handleaccounts",
+      "cmd_agproxy_main_handlequota",
+      "cmd_agproxy_main_main",
+      "cmd_agproxy_main_printhelp",
+      "config_store_addorupdateaccount",
+      "config_store_getactiveaccount",
+      "config_store_marksuccess",
+      "config_store_removeaccount",
+      "config_store_rotatenextaccount",
+      "config_store_save",
+      "config_store_savelocked",
+      "config_store_setactive",
+      "config_store_syncfromdisk",
+      "config_store_syncfromdisklocked",
+      "go_type_sync_rwmutex",
+      "go_type_time_time",
+      "internal_auth_oauth_ensurevalidtoken",
+      "internal_config_config",
+      "internal_config_config_getconfigdir",
+      "internal_config_config_go_config_account",
+      "internal_config_config_go_config_store",
+      "internal_config_config_loadstore",
+      "internal_quota_quota_fetchaccountquota"
+    ],
+    "2": [
+      "go_type_net_http_flusher",
+      "go_type_net_http_request",
+      "go_type_net_http_responsewriter",
+      "go_type_sync_mutex",
+      "go_type_time_duration",
+      "internal_server_server",
+      "internal_server_server_newserver",
+      "internal_stealth_sanitizer_parseretrydelay",
+      "server_server",
+      "server_server_acquireaccountslot",
+      "server_server_handlechatcompletions",
+      "server_server_handlehealth",
+      "server_server_handlemodels",
+      "server_server_handleroot",
+      "server_server_pipessestream",
+      "server_server_respondnonstreaming",
+      "server_server_start",
+      "server_server_validateauth"
+    ],
+    "3": [
+      "auth_tokenresponse",
+      "auth_userinfo",
+      "cmd_agproxy_main_handlelogin",
+      "internal_auth_oauth",
+      "internal_auth_oauth_buildauthurl",
+      "internal_auth_oauth_exchangecode",
+      "internal_auth_oauth_fetchuserinfo",
+      "internal_auth_oauth_generatestate",
+      "internal_auth_oauth_getclientid",
+      "internal_auth_oauth_getclientsecret",
+      "internal_auth_oauth_refreshtoken",
+      "internal_auth_oauth_startoauthserver",
+      "internal_auth_oauth_test",
+      "internal_auth_oauth_test_testclientcredentials",
+      "internal_auth_oauth_unmask"
+    ],
+    "4": [
+      "internal_stealth_sanitizer_storethoughtsignature",
+      "internal_stealth_sanitizer_storetoolcallname",
+      "internal_transformer_sse",
+      "internal_transformer_sse_newssestate",
+      "internal_transformer_sse_test",
+      "internal_transformer_sse_test_testssestate_convertchunk_text",
+      "internal_transformer_sse_test_testssestate_convertchunk_thinkingandtools",
+      "transformer_openaissechunk",
+      "transformer_openaissedelta",
+      "transformer_openaitoolcallitem",
+      "transformer_ssestate",
+      "transformer_ssestate_convertchunk"
+    ],
+    "5": [
+      "internal_upstream_types",
+      "internal_upstream_types_go_upstream_antigravitypart",
+      "upstream_antigravityblob",
+      "upstream_antigravitycontent",
+      "upstream_antigravityfncall",
+      "upstream_antigravityfnresp",
+      "upstream_antigravityfunctiondecl",
+      "upstream_antigravityrequest",
+      "upstream_antigravitytool",
+      "upstream_googlestreamchunk",
+      "upstream_safetysetting"
+    ],
+    "6": [
+      "go_type_context_context",
+      "go_type_io_readcloser",
+      "go_type_net_http_client",
+      "go_type_net_http_header",
+      "internal_upstream_client",
+      "internal_upstream_client_go_upstream_client",
+      "internal_upstream_client_newclient",
+      "internal_upstream_types_go_upstream_antigravityrequestwrapper",
+      "upstream_client_generatecontent",
+      "upstream_client_streamgeneratecontent"
+    ],
+    "7": [
+      "auth_allowedtier",
+      "auth_clientmetadata",
+      "auth_loadcodeassistrequest",
+      "auth_loadcodeassistresponse",
+      "auth_onboarduserrequest",
+      "auth_onboarduserresponse",
+      "internal_auth_project",
+      "internal_auth_project_loadprojectandtier",
+      "internal_auth_project_onboarduser"
+    ],
+    "8": [
+      "internal_quota_quota",
+      "internal_quota_quota_fmtquotapair",
+      "internal_quota_quota_printquotatable",
+      "internal_quota_quota_renderprogressbar",
+      "internal_quota_quota_truncate",
+      "quota_fetchavailablemodelsresponse",
+      "quota_modelquotaitem",
+      "quota_quotareport",
+      "quota_retrieveuserquotasummaryresponse"
+    ],
+    "9": [
+      "internal_router_laya",
+      "internal_router_laya_routewithlaya",
+      "internal_upstream_models",
+      "internal_upstream_models_go_upstream_modelinfo",
+      "internal_upstream_models_resolvemodel",
+      "router_layadecision"
+    ],
+    "10": [
+      "flake",
+      "home_amadeus_projects_workspace_agproxy_nix",
+      "pkg_buildgomodule",
+      "pkg_mkshell"
+    ],
+    "11": [
+      "pkg_github_com_surtr85_agproxy"
+    ]
+  },
+  "cohesion": {
+    "0": 0.15333333333333332,
+    "1": 0.18840579710144928,
+    "2": 0.20915032679738563,
+    "3": 0.2761904761904762,
+    "4": 0.22727272727272727,
+    "5": 0.34545454545454546,
+    "6": 0.28888888888888886,
+    "7": 0.3055555555555556,
+    "8": 0.3611111111111111,
+    "9": 0.4,
+    "10": 0.5,
+    "11": 1.0
+  },
+  "gods": [
+    {
+      "id": "internal_config_config_go_config_store",
+      "label": "Store",
+      "degree": 22
+    },
+    {
+      "id": "internal_transformer_openai_openaitoantigravity",
+      "label": "OpenAIToAntigravity()",
+      "degree": 19
+    },
+    {
+      "id": "server_server",
+      "label": "Server",
+      "degree": 15
+    },
+    {
+      "id": "cmd_agproxy_main_handlelogin",
+      "label": "handleLogin()",
+      "degree": 10
+    },
+    {
+      "id": "internal_config_config_go_config_account",
+      "label": "Account",
+      "degree": 8
+    },
+    {
+      "id": "cmd_agproxy_main_main",
+      "label": "main()",
+      "degree": 7
+    },
+    {
+      "id": "internal_auth_oauth_ensurevalidtoken",
+      "label": "EnsureValidToken()",
+      "degree": 6
+    },
+    {
+      "id": "internal_quota_quota_fetchaccountquota",
+      "label": "FetchAccountQuota()",
+      "degree": 6
+    },
+    {
+      "id": "internal_auth_oauth_getclientid",
+      "label": "GetClientID()",
+      "degree": 6
+    },
+    {
+      "id": "internal_upstream_types_go_upstream_antigravitypart",
+      "label": "AntigravityPart",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "handleLogin()",
+      "target": "LoadProjectAndTier()",
+      "source_files": [
+        "cmd/agproxy/main.go",
+        "internal/auth/project.go"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities; peripheral node `LoadProjectAndTier()` unexpectedly reaches hub `handleLogin()`"
+    },
+    {
+      "source": "handleLogin()",
+      "target": "OnboardUser()",
+      "source_files": [
+        "cmd/agproxy/main.go",
+        "internal/auth/project.go"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities; peripheral node `OnboardUser()` unexpectedly reaches hub `handleLogin()`"
+    },
+    {
+      "source": "handleQuota()",
+      "target": "PrintQuotaTable()",
+      "source_files": [
+        "cmd/agproxy/main.go",
+        "internal/quota/quota.go"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "main()",
+      "target": "NewServer()",
+      "source_files": [
+        "cmd/agproxy/main.go",
+        "internal/server/server.go"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "handleLogin()",
+      "target": "Store",
+      "source_files": [
+        "cmd/agproxy/main.go",
+        "internal/config/config.go"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `OpenAIToAntigravity()` connect `Community 0` to `Community 9`, `Community 2`?",
+      "why": "High betweenness centrality (0.349) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Store` connect `Community 1` to `Community 2`, `Community 3`?",
+      "why": "High betweenness centrality (0.324) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Server` connect `Community 2` to `Community 1`, `Community 6`?",
+      "why": "High betweenness centrality (0.282) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 5 inferred relationships involving `OpenAIToAntigravity()` (e.g. with `TestOpenAIToAntigravity_Basic()` and `TestOpenAIToAntigravity_LayaRouting()`) actually correct?",
+      "why": "`OpenAIToAntigravity()` has 5 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell` to the rest of the system?",
+      "why": "7 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}

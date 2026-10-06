@@ -1,8 +1,12 @@
 package transformer
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/surtr85/agproxy/internal/stealth"
@@ -74,6 +78,22 @@ func (s *SSEState) ConvertChunk(googleChunkBytes []byte) ([]byte, bool, error) {
 			delta.ReasoningContent += part.Text
 		} else if part.Text != "" {
 			delta.Content += part.Text
+		}
+
+		if part.InlineData != nil && part.InlineData.Data != "" {
+			homeDir, _ := os.UserHomeDir()
+			cacheDir := filepath.Join(homeDir, ".cache", "agproxy", "images")
+			_ = os.MkdirAll(cacheDir, 0755)
+			ext := ".jpeg"
+			if strings.Contains(part.InlineData.MimeType, "png") {
+				ext = ".png"
+			}
+			imgID := fmt.Sprintf("img_%d", time.Now().UnixNano())
+			filePath := filepath.Join(cacheDir, imgID+ext)
+			if raw, err := base64.StdEncoding.DecodeString(part.InlineData.Data); err == nil {
+				_ = os.WriteFile(filePath, raw, 0644)
+				delta.Content += fmt.Sprintf("\n\n![Generated Image](file://%s)\n\n", filePath)
+			}
 		}
 
 		if part.FunctionCall != nil {

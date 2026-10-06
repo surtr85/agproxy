@@ -3,12 +3,16 @@ package server
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"crypto/subtle"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -83,6 +87,8 @@ func (s *Server) acquireAccountSlot(email string) func() {
 func (s *Server) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/chat/completions", s.handleChatCompletions)
+	mux.HandleFunc("/v1/images/generations", s.handleImageGenerations)
+	mux.HandleFunc("/v1/images/", s.handleGetImage)
 	mux.HandleFunc("/v1/models", s.handleModels)
 	mux.HandleFunc("/health", s.handleHealth)
 	mux.HandleFunc("/", s.handleRoot)
@@ -374,6 +380,21 @@ func (s *Server) respondNonStreaming(w http.ResponseWriter, googleRespBytes []by
 			if part.Text != "" && !part.Thought {
 				content += part.Text
 			}
+			if part.InlineData != nil && part.InlineData.Data != "" {
+				homeDir, _ := os.UserHomeDir()
+				cacheDir := filepath.Join(homeDir, ".cache", "agproxy", "images")
+				_ = os.MkdirAll(cacheDir, 0755)
+				ext := ".jpeg"
+				if strings.Contains(part.InlineData.MimeType, "png") {
+					ext = ".png"
+				}
+				imgID := fmt.Sprintf("img_%d", time.Now().UnixNano())
+				filePath := filepath.Join(cacheDir, imgID+ext)
+				if raw, err := base64.StdEncoding.DecodeString(part.InlineData.Data); err == nil {
+					_ = os.WriteFile(filePath, raw, 0644)
+					content += fmt.Sprintf("\n\n![Generated Image](file://%s)\n\n", filePath)
+				}
+			}
 			if part.FunctionCall != nil {
 				callID := fmt.Sprintf("call_%d_%d", time.Now().UnixMilli(), toolIndex)
 				origName := part.FunctionCall.Name
@@ -448,4 +469,227 @@ func (s *Server) respondNonStreaming(w http.ResponseWriter, googleRespBytes []by
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Server) handleGetImage(w http.ResponseWriter, r *http.Request) {
+	filename := strings.TrimPrefix(r.URL.Path, "/v1/images/")
+	filename = filepath.Base(filename)
+	if filename == "" || filename == "." {
+		http.NotFound(w, r)
+		return
+	}
+
+	homeDir, _ := os.UserHomeDir()
+	filePath := filepath.Join(homeDir, ".cache", "agproxy", "images", filename)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.NotFound(w, r)
+		return
+	}
+
+	if strings.HasSuffix(filename, ".png") {
+		w.Header().Set("Content-Type", "image/png")
+	} else {
+		w.Header().Set("Content-Type", "image/jpeg")
+	}
+	http.ServeFile(w, r, filePath)
+}
+
+func (s *Server) handleImageGenerations(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if !s.validateAuth(r) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"error": map[string]any{
+				"message": "Invalid or missing API key",
+				"type":    "invalid_request_error",
+				"code":    "invalid_api_key",
+			},
+		})
+		return
+	}
+
+	type ImageGenReq struct {
+		Prompt         string `json:"prompt"`
+		Model          string `json:"model"`
+		N              int    `json:"n"`
+		Size           string `json:"size"`
+		ResponseFormat string `json:"response_format"`
+	}
+
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	var req ImageGenReq
+	if err := json.Unmarshal(bodyBytes, &req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	if strings.TrimSpace(req.Prompt) == "" {
+		http.Error(w, "Prompt is required", http.StatusBadRequest)
+		return
+	}
+
+	modelID := req.Model
+	if modelID == "" {
+		modelID = "gemini-3.1-flash-image"
+	}
+	modelInfo := upstream.ResolveModel(modelID)
+	upstreamModel := modelInfo.UpstreamModel
+
+	log.Printf("[IMAGE:START] Generating image with upstream model: %s (prompt: %q)", upstreamModel, req.Prompt)
+
+	maxRetries := 3
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		acc := s.store.GetActiveAccount()
+		if acc == nil {
+			http.Error(w, "No active Google Antigravity account available", http.StatusServiceUnavailable)
+			return
+		}
+
+		token, err := auth.EnsureValidToken(acc, s.store)
+		if err != nil {
+			log.Printf("[IMAGE:AUTH_ERROR] Account %s token refresh error: %v", acc.Email, err)
+			s.store.RotateNextAccount(acc.Email, 5*time.Minute)
+			continue
+		}
+
+		release := s.acquireAccountSlot(acc.Email)
+
+		projectID := acc.ProjectID
+		if projectID == "" {
+			projectID = "aicode-consumers"
+		}
+
+		payload := &upstream.AntigravityRequestWrapper{
+			Project:   projectID,
+			Model:     upstreamModel,
+			UserAgent: upstream.UserAgent,
+			RequestID: fmt.Sprintf("agent/img/%d", time.Now().UnixNano()),
+			Request: upstream.AntigravityRequest{
+				Contents: []upstream.AntigravityContent{
+					{
+						Role: "user",
+						Parts: []upstream.AntigravityPart{
+							{Text: req.Prompt},
+						},
+					},
+				},
+				SessionID: fmt.Sprintf("img-sess-%d", time.Now().UnixNano()),
+			},
+		}
+
+		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
+		respBytes, statusCode, headers, err := s.upstreamClient.GenerateContent(ctx, token, payload)
+		cancel()
+		release()
+
+		if err != nil {
+			log.Printf("[IMAGE:ERROR] Attempt %d error: %v", attempt+1, err)
+			continue
+		}
+
+		if statusCode == http.StatusTooManyRequests {
+			retryHeader := headers.Get("Retry-After")
+			delay := stealth.ParseRetryDelay(retryHeader, string(respBytes))
+			if delay <= 0 {
+				delay = 30 * time.Second
+			}
+			s.store.RotateNextAccount(acc.Email, delay)
+			continue
+		}
+
+		if statusCode != http.StatusOK {
+			log.Printf("[IMAGE:UPSTREAM_STATUS] Status %d: %s", statusCode, string(respBytes))
+			continue
+		}
+
+		// Success!
+		s.store.MarkSuccess(acc.Email)
+
+		var gChunk upstream.GoogleStreamChunk
+		if err := json.Unmarshal(respBytes, &gChunk); err != nil {
+			http.Error(w, "Failed to parse Google response", http.StatusInternalServerError)
+			return
+		}
+
+		var b64Data string
+		mimeType := "image/jpeg"
+
+		if len(gChunk.Response.Candidates) > 0 {
+			for _, part := range gChunk.Response.Candidates[0].Content.Parts {
+				if part.InlineData != nil && part.InlineData.Data != "" {
+					b64Data = part.InlineData.Data
+					if part.InlineData.MimeType != "" {
+						mimeType = part.InlineData.MimeType
+					}
+					break
+				}
+			}
+		}
+
+		if b64Data == "" {
+			http.Error(w, "No image was returned by upstream model", http.StatusBadGateway)
+			return
+		}
+
+		homeDir, _ := os.UserHomeDir()
+		cacheDir := filepath.Join(homeDir, ".cache", "agproxy", "images")
+		_ = os.MkdirAll(cacheDir, 0755)
+		ext := ".jpeg"
+		if strings.Contains(mimeType, "png") {
+			ext = ".png"
+		}
+		imgID := fmt.Sprintf("img_%d", time.Now().UnixNano())
+		fileName := imgID + ext
+		filePath := filepath.Join(cacheDir, fileName)
+
+		if rawBytes, err := base64.StdEncoding.DecodeString(b64Data); err == nil {
+			_ = os.WriteFile(filePath, rawBytes, 0644)
+			log.Printf("[IMAGE:SAVED] Generated image saved to %s (%d bytes)", filePath, len(rawBytes))
+		}
+
+		imageURL := fmt.Sprintf("http://%s:%d/v1/images/%s", s.host, s.port, fileName)
+
+		type ImageItem struct {
+			B64JSON       string `json:"b64_json,omitempty"`
+			URL           string `json:"url,omitempty"`
+			RevisedPrompt string `json:"revised_prompt,omitempty"`
+		}
+
+		type ImageResponse struct {
+			Created int64       `json:"created"`
+			Data    []ImageItem `json:"data"`
+		}
+
+		item := ImageItem{
+			RevisedPrompt: req.Prompt,
+		}
+		if req.ResponseFormat == "b64_json" {
+			item.B64JSON = b64Data
+		} else if req.ResponseFormat == "url" {
+			item.URL = imageURL
+		} else {
+			// Include both
+			item.B64JSON = b64Data
+			item.URL = imageURL
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(ImageResponse{
+			Created: time.Now().Unix(),
+			Data:    []ImageItem{item},
+		})
+		return
+	}
+
+	http.Error(w, "Failed to generate image across all available accounts", http.StatusServiceUnavailable)
 }

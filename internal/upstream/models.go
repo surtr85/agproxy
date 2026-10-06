@@ -95,6 +95,28 @@ var ModelRegistry = map[string]ModelInfo{
 		UpstreamModel: "gpt-oss-120b-medium",
 		DisplayName:   "GPT-OSS 120B (Medium)",
 	},
+
+	// Nano Banana / Gemini Multimodal Image Generation
+	"gemini-3.1-flash-image": {
+		ID:            "gemini-3.1-flash-image",
+		UpstreamModel: "gemini-3.1-flash-image",
+		DisplayName:   "Google: Nano Banana 2 (Gemini 3.1 Flash Image)",
+	},
+	"nano-banana": {
+		ID:            "nano-banana",
+		UpstreamModel: "gemini-3.1-flash-image",
+		DisplayName:   "Google: Nano Banana 2",
+	},
+	"nano-banana-2": {
+		ID:            "nano-banana-2",
+		UpstreamModel: "gemini-3.1-flash-image",
+		DisplayName:   "Google: Nano Banana 2",
+	},
+	"dall-e-3": {
+		ID:            "dall-e-3",
+		UpstreamModel: "gemini-3.1-flash-image",
+		DisplayName:   "Nano Banana 2 (OpenAI DALL-E 3 Alias)",
+	},
 }
 
 func ResolveModel(requestedModel string) ModelInfo {
@@ -110,6 +132,8 @@ func ResolveModel(requestedModel string) ModelInfo {
 		return ModelRegistry["claude-opus-4-6-thinking"]
 	case "research", "raw", "uncensored":
 		return ModelRegistry["gemini-3.8-flash-raw"]
+	case "nano-banana", "nano-banana-2", "gemini-image", "image", "dall-e-3", "dall-e-2":
+		return ModelRegistry["gemini-3.1-flash-image"]
 	default:
 		// Default to gemini-3.8-flash
 		return ModelInfo{

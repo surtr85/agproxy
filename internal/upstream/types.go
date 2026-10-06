@@ -73,6 +73,7 @@ type GoogleStreamChunk struct {
 					Text             string             `json:"text"`
 					Thought          bool               `json:"thought"`
 					ThoughtSignature string             `json:"thoughtSignature"`
+					InlineData       *AntigravityBlob   `json:"inlineData,omitempty"`
 					FunctionCall     *AntigravityFnCall `json:"functionCall"`
 				} `json:"parts"`
 			} `json:"content"`

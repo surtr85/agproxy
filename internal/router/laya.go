@@ -26,13 +26,22 @@ var trivialGreetingRegex = regexp.MustCompile(`(?i)^(?:hi|hello|hey|howdy|greeti
 
 // RouteWithLaya queries Laya System-1 on port 8089 to dynamically select the optimal Google model
 func RouteWithLaya(prompt string) upstream.ModelInfo {
+	return RouteWithLayaContext(prompt, 0, false)
+}
+
+// RouteWithLayaContext considers prompt, conversation length, and coding context
+func RouteWithLayaContext(prompt string, totalChars int, hasCodeOrTools bool) upstream.ModelInfo {
 	trimmed := strings.TrimSpace(prompt)
 	if trimmed == "" {
+		if hasCodeOrTools || totalChars > 2000 {
+			return upstream.ModelRegistry["gemini-3.8-flash-medium"]
+		}
 		return upstream.ModelRegistry["gemini-3.8-flash-low"]
 	}
 
 	// Fast heuristic: Ultra-short greetings & small talk bypass network directly to Flash-Low
-	if len(trimmed) < 80 && trivialGreetingRegex.MatchString(trimmed) {
+	// ONLY if conversation is fresh (not an active multi-turn coding session)
+	if len(trimmed) < 80 && !hasCodeOrTools && totalChars < 500 && trivialGreetingRegex.MatchString(trimmed) {
 		log.Printf("[LAYA:FAST_ROUTER] Trivial conversational greeting detected: %q => Selected Google Model: gemini-3.8-flash-low", trimmed)
 		return upstream.ModelRegistry["gemini-3.8-flash-low"]
 	}
@@ -97,6 +106,15 @@ func RouteWithLaya(prompt string) upstream.ModelInfo {
 	domain := decision.Answers["domain"].Choice
 	diff := decision.Answers["difficulty"].Score
 
+	// If the overall conversation contains heavy code or tool calls and user asks a short follow-up,
+	// escalate domain or difficulty accordingly so we don't downgrade complex tasks to flash-low.
+	if hasCodeOrTools && domain == "other" {
+		domain = "code"
+	}
+	if totalChars > 4000 && diff < 1.40 {
+		diff = 1.40
+	}
+
 	// Google-Only Model Routing Matrix calibrated to empirical Laya difficulty distributions:
 	// - [0.0 - 1.35]: Trivial / Easy / Small talk / Basic one-liners
 	// - [1.35 - 1.70]: Moderate standard tasks
@@ -104,8 +122,8 @@ func RouteWithLaya(prompt string) upstream.ModelInfo {
 	// - [>= 2.05 or math_or_logic]: Hard logic, proofs, critical architecture
 	var selectedModel string
 	switch {
-	// 1. Trivial chitchat, greetings, or very easy queries (< 1.30) -> Flash Low
-	case domain == "chitchat" || diff < 1.30 || (domain == "other" && diff < 1.40):
+	// 1. Trivial chitchat, greetings, or very easy queries (< 1.30) -> Flash Low (only if not heavy context)
+	case !hasCodeOrTools && (domain == "chitchat" || diff < 1.30 || (domain == "other" && diff < 1.40)):
 		selectedModel = "gemini-3.8-flash-low"
 
 	// 2. High-difficulty mathematical proofs, formal logic, or extreme complexity -> Gemini 3.1 Pro
@@ -121,6 +139,6 @@ func RouteWithLaya(prompt string) upstream.ModelInfo {
 		selectedModel = "gemini-3.8-flash-medium"
 	}
 
-	log.Printf("[LAYA:ROUTER] System-1 Decision: domain=%s, difficulty=%.2f => Selected Google Model: %s", domain, diff, selectedModel)
+	log.Printf("[LAYA:ROUTER] System-1 Decision: domain=%s, difficulty=%.2f (totalChars=%d, code=%v) => Selected Google Model: %s", domain, diff, totalChars, hasCodeOrTools, selectedModel)
 	return upstream.ModelRegistry[selectedModel]
 }

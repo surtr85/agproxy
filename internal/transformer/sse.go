@@ -30,16 +30,23 @@ type OpenAIToolCallItem struct {
 	} `json:"function"`
 }
 
+type OpenAIUsage struct {
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
 type OpenAISSEChunk struct {
-	ID      string `json:"id"`
-	Object  string `json:"object"`
-	Created int64  `json:"created"`
-	Model   string `json:"model"`
+	ID      string       `json:"id"`
+	Object  string       `json:"object"`
+	Created int64        `json:"created"`
+	Model   string       `json:"model"`
 	Choices []struct {
 		Index        int            `json:"index"`
 		Delta        OpenAISSEDelta `json:"delta"`
 		FinishReason *string        `json:"finish_reason"`
 	} `json:"choices"`
+	Usage *OpenAIUsage `json:"usage,omitempty"`
 }
 
 type SSEState struct {
@@ -164,6 +171,14 @@ func (s *SSEState) ConvertChunk(googleChunkBytes []byte) ([]byte, bool, error) {
 	}
 
 	chunk.Choices = append(chunk.Choices, choice)
+
+	if isDone && gChunk.Response.UsageMetadata.TotalTokenCount > 0 {
+		chunk.Usage = &OpenAIUsage{
+			PromptTokens:     gChunk.Response.UsageMetadata.PromptTokenCount,
+			CompletionTokens: gChunk.Response.UsageMetadata.CandidatesTokenCount,
+			TotalTokens:      gChunk.Response.UsageMetadata.TotalTokenCount,
+		}
+	}
 
 	data, err := json.Marshal(chunk)
 	if err != nil {

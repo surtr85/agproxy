@@ -57,13 +57,19 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 	modelClean := strings.TrimPrefix(req.Model, "agproxy/")
 	if modelClean == "laya" {
 		lastUserPrompt := ""
+		totalChars := 0
+		hasCodeOrTools := len(req.Tools) > 0
 		for i := len(req.Messages) - 1; i >= 0; i-- {
-			if req.Messages[i].Role == "user" {
-				lastUserPrompt = extractText(req.Messages[i].Content)
-				break
+			msgTxt := extractText(req.Messages[i].Content)
+			totalChars += len(msgTxt)
+			if len(req.Messages[i].ToolCalls) > 0 || req.Messages[i].Role == "tool" {
+				hasCodeOrTools = true
+			}
+			if req.Messages[i].Role == "user" && lastUserPrompt == "" {
+				lastUserPrompt = msgTxt
 			}
 		}
-		modelInfo = router.RouteWithLaya(lastUserPrompt)
+		modelInfo = router.RouteWithLayaContext(lastUserPrompt, totalChars, hasCodeOrTools)
 	} else {
 		modelInfo = upstream.ResolveModel(modelClean)
 	}

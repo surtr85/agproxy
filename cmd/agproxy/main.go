@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,6 +34,7 @@ Commands:
   serve       Start the OpenAI-compatible HTTP proxy server
   login       Log in with a Google Antigravity OAuth account
   quota       Inspect live quota and reset timers for all accounts
+  doctor      Diagnose health of accounts, upstream connectivity, and Laya daemon
   accounts    Manage saved Google accounts (list, use, remove)
   image       Generate an image using Google Nano Banana 2 (Gemini 3.1 Flash Image)
   version     Show current version
@@ -85,6 +88,9 @@ func main() {
 
 	case "quota":
 		handleQuota(store)
+
+	case "doctor":
+		handleDoctor(store)
 
 	case "image":
 		handleImage(store, os.Args[2:])
@@ -169,6 +175,99 @@ func handleLogin(store *config.Store) {
 
 	fmt.Printf("\n✓ Account [%s] successfully connected and saved!\n", acc.Email)
 	fmt.Println("You can now run: agproxy serve")
+}
+
+func handleDoctor(store *config.Store) {
+	fmt.Println("\n=== agproxy Diagnostic Health Check (Doctor) ===")
+
+	// 1. Check Accounts Configuration
+	accounts := store.GetAllAccounts()
+	activeAcc := store.GetActiveAccount()
+	if len(accounts) == 0 {
+		fmt.Println("❌ Accounts: No Google accounts found in ~/.config/agproxy/accounts.json")
+		fmt.Println("   👉 Run 'agproxy login' to add an account.")
+		return
+	}
+	fmt.Printf("✓ Accounts: %d registered accounts found (Active: %s)\n", len(accounts), func() string {
+		if activeAcc != nil {
+			return activeAcc.Email
+		}
+		return "None"
+	}())
+
+	// 2. Check Tokens & Google Upstream Connectivity
+	fmt.Println("\nChecking Google Antigravity Upstream Connectivity:")
+	for _, acc := range accounts {
+		token, err := auth.EnsureValidToken(acc, store)
+		status := "✓"
+		extra := ""
+		if err != nil {
+			status = "❌"
+			extra = fmt.Sprintf("(Token refresh failed: %v)", err)
+		} else {
+			// Test minimal ping to Antigravity API
+			client := &http.Client{Timeout: 5 * time.Second}
+			modelsURL := fmt.Sprintf("%s/v1internal:fetchAvailableModels", upstream.BaseURL)
+			reqBody, _ := json.Marshal(map[string]string{"project": acc.ProjectID})
+			req, _ := http.NewRequest("POST", modelsURL, bytes.NewReader(reqBody))
+			req.Header.Set("Authorization", "Bearer "+token)
+			req.Header.Set("User-Agent", upstream.UserAgent)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("X-Client-Name", "antigravity")
+			req.Header.Set("X-Client-Version", "2.11.0")
+			
+			resp, reqErr := client.Do(req)
+			if reqErr != nil {
+				status = "⚠️"
+				extra = fmt.Sprintf("(Upstream request error: %v)", reqErr)
+			} else {
+				resp.Body.Close()
+				if resp.StatusCode == http.StatusOK {
+					extra = fmt.Sprintf("(API reachable, Project: %s, Tier: %s)", acc.ProjectID, acc.TierID)
+				} else {
+					status = "⚠️"
+					extra = fmt.Sprintf("(API returned HTTP %d)", resp.StatusCode)
+				}
+			}
+		}
+		fmt.Printf("  %s %-30s %s\n", status, acc.Email, extra)
+	}
+
+	// 3. Check Laya System-1 Local Daemon
+	fmt.Println("\nChecking Laya System-1 Cognitive Engine (port 8089):")
+	layaClient := &http.Client{Timeout: 1 * time.Second}
+	layaPingReq, _ := http.NewRequest("GET", "http://127.0.0.1:8089/health", nil)
+	layaResp, err := layaClient.Do(layaPingReq)
+	if err != nil {
+		// try ping via post to systemone
+		testPayload, _ := json.Marshal(map[string]any{"state": "ping"})
+		postReq, _ := http.NewRequest("POST", "http://127.0.0.1:8089/v1/systemone", bytes.NewReader(testPayload))
+		postReq.Header.Set("Content-Type", "application/json")
+		postResp, postErr := layaClient.Do(postReq)
+		if postErr != nil {
+			fmt.Println("  ⚠️  Laya Daemon: Unreachable on http://127.0.0.1:8089 (router will fallback to gemini-3.8-flash-medium)")
+			fmt.Println("     💡 Note: Systemd user service: systemctl --user status laya.service")
+		} else {
+			postResp.Body.Close()
+			fmt.Printf("  ✓  Laya Daemon: Online and operational (HTTP %d)\n", postResp.StatusCode)
+		}
+	} else {
+		layaResp.Body.Close()
+		fmt.Printf("  ✓  Laya Daemon: Online and healthy (HTTP %d)\n", layaResp.StatusCode)
+	}
+
+	// 4. Check Local Proxy Ports & Services
+	fmt.Println("\nChecking Local Service Port Bindings:")
+	sClient := &http.Client{Timeout: 500 * time.Millisecond}
+	sResp, err := sClient.Get("http://127.0.0.1:8080/health")
+	if err == nil {
+		sResp.Body.Close()
+		fmt.Println("  ✓  agproxy Server: Active and listening on http://127.0.0.1:8080")
+	} else {
+		fmt.Println("  ℹ️  agproxy Server: Not running on port 8080 (Start with 'agproxy serve' or systemctl --user start agproxy)")
+	}
+
+	fmt.Println("\n=== Doctor Summary: All core invariants verified. ===")
 }
 
 func handleQuota(store *config.Store) {

@@ -259,6 +259,18 @@ func (s *Store) RotateNextAccount(failedEmail string, blockDuration time.Duratio
 	return nil
 }
 
+func (s *Store) GetAllAccounts() []*Account {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.syncFromDiskLocked()
+	var list []*Account
+	for _, acc := range s.Accounts {
+		list = append(list, acc)
+	}
+	return list
+}
+
 func (s *Store) MarkSuccess(email string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

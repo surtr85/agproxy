@@ -42,10 +42,18 @@ type CurrentTierInfo struct {
 	UpgradeSubscriptionType string `json:"upgradeSubscriptionType"`
 }
 
+type PaidTierInfo struct {
+	ID                     string `json:"id"`
+	Name                   string `json:"name"`
+	Description            string `json:"description"`
+	UpgradeSubscriptionUri string `json:"upgradeSubscriptionUri"`
+}
+
 type LoadCodeAssistResponse struct {
 	CloudAICompanionProject any              `json:"cloudaicompanionProject"`
 	AllowedTiers            []AllowedTier    `json:"allowedTiers"`
 	CurrentTier             CurrentTierInfo  `json:"currentTier"`
+	PaidTier                *PaidTierInfo    `json:"paidTier,omitempty"`
 }
 
 type OnboardUserRequest struct {
@@ -100,14 +108,12 @@ func LoadProjectAndTier(accessToken string) (string, string, error) {
 		}
 	}
 
-	tierID := "Free Tier"
-	for _, tier := range data.AllowedTiers {
-		if tier.IsDefault && tier.ID != "" {
-			tierID = tier.ID
-			break
-		}
-	}
-	if data.CurrentTier.ID != "" {
+	tierID := "Google AI Pro"
+	if data.PaidTier != nil && data.PaidTier.Name != "" {
+		tierID = data.PaidTier.Name
+	} else if data.CurrentTier.ID == "standard-tier" {
+		tierID = "Standard (Pro)"
+	} else if data.CurrentTier.ID != "" {
 		tierID = FormatTierName(data.CurrentTier.ID, data.CurrentTier.Name, data.CurrentTier.UpgradeSubscriptionType)
 	}
 
@@ -118,11 +124,8 @@ func FormatTierName(id, name, upgradeType string) string {
 	switch id {
 	case "standard-tier":
 		return "Standard (Pro)"
-	case "free-tier":
-		if upgradeType != "" {
-			return "Free Tier"
-		}
-		return "Free Tier"
+	case "g1-pro-tier":
+		return "Google AI Pro"
 	case "enterprise-tier":
 		return "Enterprise"
 	default:

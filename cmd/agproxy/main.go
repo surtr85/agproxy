@@ -205,8 +205,12 @@ func handleDoctor(store *config.Store) {
 			status = "❌"
 			extra = fmt.Sprintf("(Token refresh failed: %v)", err)
 		} else {
-			// Test minimal ping to Antigravity API
-			client := &http.Client{Timeout: 5 * time.Second}
+			client := &http.Client{Timeout: 10 * time.Second}
+			tierDisplay := acc.TierID
+			if _, tier, err := auth.LoadProjectAndTier(token); err == nil && tier != "" {
+				tierDisplay = tier
+				acc.TierID = tier
+			}
 			modelsURL := fmt.Sprintf("%s/v1internal:fetchAvailableModels", upstream.BaseURL)
 			reqBody, _ := json.Marshal(map[string]string{"project": acc.ProjectID})
 			req, _ := http.NewRequest("POST", modelsURL, bytes.NewReader(reqBody))
@@ -215,7 +219,7 @@ func handleDoctor(store *config.Store) {
 			req.Header.Set("Content-Type", "application/json")
 			req.Header.Set("X-Client-Name", "antigravity")
 			req.Header.Set("X-Client-Version", "2.11.0")
-			
+
 			resp, reqErr := client.Do(req)
 			if reqErr != nil {
 				status = "⚠️"
@@ -223,7 +227,7 @@ func handleDoctor(store *config.Store) {
 			} else {
 				resp.Body.Close()
 				if resp.StatusCode == http.StatusOK {
-					extra = fmt.Sprintf("(API reachable, Project: %s, Tier: %s)", acc.ProjectID, acc.TierID)
+					extra = fmt.Sprintf("(API reachable, Project: %s, Tier: %s)", acc.ProjectID, tierDisplay)
 				} else {
 					status = "⚠️"
 					extra = fmt.Sprintf("(API returned HTTP %d)", resp.StatusCode)

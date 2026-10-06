@@ -1,16 +1,16 @@
 # Graph Report - agproxy  (2026-10-07)
 
 ## Corpus Check
-- 21 files · ~12,238 words
+- 21 files · ~12,404 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 169 nodes · 322 edges · 13 communities (12 shown, 1 thin omitted)
+- 169 nodes · 326 edges · 13 communities (12 shown, 1 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8aced3b8`
+- Built from commit: `a804f238`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,11 +19,11 @@
 - Store
 - Server
 - oauth.go
-- sse.go
+- testing.T
 - types.go
-- Client
+- sse.go
 - project.go
-- main
+- quota.go
 - RouteWithLayaContext
 - flake.nix
 - github.com/surtr85/agproxy
@@ -37,21 +37,21 @@
 5. `main()` - 9 edges
 6. `EnsureValidToken()` - 9 edges
 7. `Account` - 9 edges
-8. `handleImage()` - 7 edges
-9. `GetClientID()` - 6 edges
-10. `FetchAccountQuota()` - 6 edges
+8. `FetchAccountQuota()` - 8 edges
+9. `handleImage()` - 7 edges
+10. `GetClientID()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `handleLogin()` --calls--> `LoadProjectAndTier()`  [EXTRACTED]
-  cmd/agproxy/main.go → internal/auth/project.go
-- `main()` --calls--> `LoadStore()`  [EXTRACTED]
-  cmd/agproxy/main.go → internal/config/config.go
 - `main()` --calls--> `NewServer()`  [EXTRACTED]
   cmd/agproxy/main.go → internal/server/server.go
 - `handleLogin()` --calls--> `GenerateState()`  [EXTRACTED]
   cmd/agproxy/main.go → internal/auth/oauth.go
 - `handleLogin()` --calls--> `StartOAuthServer()`  [EXTRACTED]
   cmd/agproxy/main.go → internal/auth/oauth.go
+- `handleLogin()` --calls--> `LoadProjectAndTier()`  [EXTRACTED]
+  cmd/agproxy/main.go → internal/auth/project.go
+- `handleLogin()` --calls--> `OnboardUser()`  [EXTRACTED]
+  cmd/agproxy/main.go → internal/auth/project.go
 
 ## Import Cycles
 - None detected.
@@ -60,39 +60,39 @@
 
 ### Community 0 - "OpenAIToAntigravity"
 Cohesion: 0.16
-Nodes (21): testing.T, BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature(), GetToolCallName() (+13 more)
+Nodes (18): BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature(), GetToolCallName(), SanitizePromptText() (+10 more)
 
 ### Community 1 - "Store"
-Cohesion: 0.25
-Nodes (6): sync.RWMutex, time.Time, GetConfigDir(), Account, Store, LoadStore()
+Cohesion: 0.18
+Nodes (14): handleAccounts(), handleDoctor(), handleImage(), handleQuota(), main(), printHelp(), sync.RWMutex, time.Time (+6 more)
 
 ### Community 2 - "Server"
-Cohesion: 0.22
-Nodes (8): net/http.Flusher, net/http.Request, net/http.ResponseWriter, sync.Mutex, time.Duration, NewServer(), ParseRetryDelay(), Server
+Cohesion: 0.23
+Nodes (7): net/http.Flusher, net/http.Request, net/http.ResponseWriter, sync.Mutex, NewServer(), ParseRetryDelay(), Server
 
 ### Community 3 - "oauth.go"
 Cohesion: 0.25
 Nodes (14): TokenResponse, UserInfo, handleLogin(), BuildAuthURL(), ExchangeCode(), FetchUserInfo(), GenerateState(), GetClientID() (+6 more)
 
-### Community 4 - "sse.go"
-Cohesion: 0.18
-Nodes (11): StoreThoughtSignature(), StoreToolCallName(), NewSSEState(), TestSSEState_ConvertChunk_Text(), TestSSEState_ConvertChunk_ThinkingAndTools(), TestSSEChunkUsageConversion(), OpenAISSEChunk, OpenAISSEDelta (+3 more)
+### Community 4 - "testing.T"
+Cohesion: 0.24
+Nodes (10): testing.T, TestOpenAIToAntigravity_Basic(), TestOpenAIToAntigravity_LayaRouting(), TestOpenAIToAntigravity_StealthSanitization(), TestOpenAIToAntigravity_ToolCloaking(), TestOpenAIToAntigravity_ToolResponseResolution(), NewSSEState(), TestSSEState_ConvertChunk_Text() (+2 more)
 
 ### Community 5 - "types.go"
-Cohesion: 0.36
-Nodes (10): AntigravityPart, AntigravityBlob, AntigravityContent, AntigravityFnCall, AntigravityFnResp, AntigravityFunctionDecl, AntigravityRequest, AntigravityTool (+2 more)
+Cohesion: 0.16
+Nodes (18): context.Context, io.ReadCloser, net/http.Client, net/http.Header, Client, NewClient(), AntigravityPart, AntigravityRequestWrapper (+10 more)
 
-### Community 6 - "Client"
-Cohesion: 0.25
-Nodes (8): context.Context, io.ReadCloser, net/http.Client, net/http.Header, Client, NewClient(), AntigravityRequestWrapper, TransformResult
+### Community 6 - "sse.go"
+Cohesion: 0.70
+Nodes (4): OpenAISSEChunk, OpenAISSEDelta, OpenAIToolCallItem, OpenAIUsage
 
 ### Community 7 - "project.go"
-Cohesion: 0.36
-Nodes (7): AllowedTier, ClientMetadata, LoadCodeAssistRequest, LoadCodeAssistResponse, OnboardUserRequest, OnboardUserResponse, LoadProjectAndTier()
+Cohesion: 0.31
+Nodes (9): AllowedTier, ClientMetadata, CurrentTierInfo, LoadCodeAssistRequest, LoadCodeAssistResponse, OnboardUserRequest, OnboardUserResponse, FormatTierName() (+1 more)
 
-### Community 8 - "main"
-Cohesion: 0.20
-Nodes (16): handleAccounts(), handleDoctor(), handleImage(), handleQuota(), main(), printHelp(), EnsureValidToken(), FetchAccountQuota() (+8 more)
+### Community 8 - "quota.go"
+Cohesion: 0.36
+Nodes (7): time.Duration, formatTimeRemaining(), PrintQuotaTable(), renderBar(), QuotaReport, RetrieveUserQuotaSummaryResponse, SingleQuotaItem
 
 ### Community 9 - "RouteWithLayaContext"
 Cohesion: 0.31
@@ -114,12 +114,12 @@ Nodes (13): 1. Build & Run with Nix, 2. Log in with Google Antigravity, 3. Check
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `Client`?**
-  _High betweenness centrality (0.256) - this node is a cross-community bridge._
-- **Why does `Store` connect `Store` to `main`, `Server`, `oauth.go`?**
-  _High betweenness centrality (0.248) - this node is a cross-community bridge._
-- **Why does `Server` connect `Server` to `Store`, `Client`?**
-  _High betweenness centrality (0.197) - this node is a cross-community bridge._
+- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `testing.T`, `types.go`?**
+  _High betweenness centrality (0.260) - this node is a cross-community bridge._
+- **Why does `Store` connect `Store` to `Server`, `oauth.go`?**
+  _High betweenness centrality (0.219) - this node is a cross-community bridge._
+- **Why does `Server` connect `Server` to `Store`, `types.go`?**
+  _High betweenness centrality (0.194) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `OpenAIToAntigravity()` (e.g. with `TestOpenAIToAntigravity_Basic()` and `TestOpenAIToAntigravity_LayaRouting()`) actually correct?**
   _`OpenAIToAntigravity()` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell` to the rest of the system?**

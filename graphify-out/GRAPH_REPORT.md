@@ -1,16 +1,16 @@
 # Graph Report - agproxy  (2026-10-07)
 
 ## Corpus Check
-- 21 files · ~12,404 words
+- 21 files · ~12,439 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 169 nodes · 326 edges · 13 communities (12 shown, 1 thin omitted)
+- 170 nodes · 329 edges · 12 communities (11 shown, 1 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a804f238`
+- Built from commit: `c47fbc91`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,11 +19,10 @@
 - Store
 - Server
 - oauth.go
-- testing.T
-- types.go
 - sse.go
+- types.go
 - project.go
-- quota.go
+- main
 - RouteWithLayaContext
 - flake.nix
 - github.com/surtr85/agproxy
@@ -42,6 +41,8 @@
 10. `GetClientID()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `main()` --calls--> `LoadStore()`  [EXTRACTED]
+  cmd/agproxy/main.go → internal/config/config.go
 - `main()` --calls--> `NewServer()`  [EXTRACTED]
   cmd/agproxy/main.go → internal/server/server.go
 - `handleLogin()` --calls--> `GenerateState()`  [EXTRACTED]
@@ -50,21 +51,19 @@
   cmd/agproxy/main.go → internal/auth/oauth.go
 - `handleLogin()` --calls--> `LoadProjectAndTier()`  [EXTRACTED]
   cmd/agproxy/main.go → internal/auth/project.go
-- `handleLogin()` --calls--> `OnboardUser()`  [EXTRACTED]
-  cmd/agproxy/main.go → internal/auth/project.go
 
 ## Import Cycles
 - None detected.
 
-## Communities (13 total, 1 thin omitted)
+## Communities (12 total, 1 thin omitted)
 
 ### Community 0 - "OpenAIToAntigravity"
 Cohesion: 0.16
-Nodes (18): BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature(), GetToolCallName(), SanitizePromptText() (+10 more)
+Nodes (21): testing.T, BuildIDERequestID(), CleanJSONSchema(), cleanSchemaRecursive(), DeriveSessionID(), formatUUID(), GetThoughtSignature(), GetToolCallName() (+13 more)
 
 ### Community 1 - "Store"
-Cohesion: 0.18
-Nodes (14): handleAccounts(), handleDoctor(), handleImage(), handleQuota(), main(), printHelp(), sync.RWMutex, time.Time (+6 more)
+Cohesion: 0.25
+Nodes (6): sync.RWMutex, time.Time, GetConfigDir(), Account, Store, LoadStore()
 
 ### Community 2 - "Server"
 Cohesion: 0.23
@@ -74,25 +73,21 @@ Nodes (7): net/http.Flusher, net/http.Request, net/http.ResponseWriter, sync.Mut
 Cohesion: 0.25
 Nodes (14): TokenResponse, UserInfo, handleLogin(), BuildAuthURL(), ExchangeCode(), FetchUserInfo(), GenerateState(), GetClientID() (+6 more)
 
-### Community 4 - "testing.T"
-Cohesion: 0.24
-Nodes (10): testing.T, TestOpenAIToAntigravity_Basic(), TestOpenAIToAntigravity_LayaRouting(), TestOpenAIToAntigravity_StealthSanitization(), TestOpenAIToAntigravity_ToolCloaking(), TestOpenAIToAntigravity_ToolResponseResolution(), NewSSEState(), TestSSEState_ConvertChunk_Text() (+2 more)
+### Community 4 - "sse.go"
+Cohesion: 0.18
+Nodes (11): StoreThoughtSignature(), StoreToolCallName(), NewSSEState(), TestSSEState_ConvertChunk_Text(), TestSSEState_ConvertChunk_ThinkingAndTools(), TestSSEChunkUsageConversion(), OpenAISSEChunk, OpenAISSEDelta (+3 more)
 
 ### Community 5 - "types.go"
 Cohesion: 0.16
 Nodes (18): context.Context, io.ReadCloser, net/http.Client, net/http.Header, Client, NewClient(), AntigravityPart, AntigravityRequestWrapper (+10 more)
 
-### Community 6 - "sse.go"
-Cohesion: 0.70
-Nodes (4): OpenAISSEChunk, OpenAISSEDelta, OpenAIToolCallItem, OpenAIUsage
-
 ### Community 7 - "project.go"
-Cohesion: 0.31
-Nodes (9): AllowedTier, ClientMetadata, CurrentTierInfo, LoadCodeAssistRequest, LoadCodeAssistResponse, OnboardUserRequest, OnboardUserResponse, FormatTierName() (+1 more)
+Cohesion: 0.29
+Nodes (10): AllowedTier, ClientMetadata, CurrentTierInfo, LoadCodeAssistRequest, LoadCodeAssistResponse, OnboardUserRequest, OnboardUserResponse, PaidTierInfo (+2 more)
 
-### Community 8 - "quota.go"
-Cohesion: 0.36
-Nodes (7): time.Duration, formatTimeRemaining(), PrintQuotaTable(), renderBar(), QuotaReport, RetrieveUserQuotaSummaryResponse, SingleQuotaItem
+### Community 8 - "main"
+Cohesion: 0.21
+Nodes (15): handleAccounts(), handleDoctor(), handleImage(), handleQuota(), main(), printHelp(), time.Duration, EnsureValidToken() (+7 more)
 
 ### Community 9 - "RouteWithLayaContext"
 Cohesion: 0.31
@@ -114,12 +109,12 @@ Nodes (13): 1. Build & Run with Nix, 2. Log in with Google Antigravity, 3. Check
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `testing.T`, `types.go`?**
-  _High betweenness centrality (0.260) - this node is a cross-community bridge._
-- **Why does `Store` connect `Store` to `Server`, `oauth.go`?**
-  _High betweenness centrality (0.219) - this node is a cross-community bridge._
+- **Why does `OpenAIToAntigravity()` connect `OpenAIToAntigravity` to `RouteWithLayaContext`, `Server`, `types.go`?**
+  _High betweenness centrality (0.259) - this node is a cross-community bridge._
+- **Why does `Store` connect `Store` to `main`, `Server`, `oauth.go`?**
+  _High betweenness centrality (0.218) - this node is a cross-community bridge._
 - **Why does `Server` connect `Server` to `Store`, `types.go`?**
-  _High betweenness centrality (0.194) - this node is a cross-community bridge._
+  _High betweenness centrality (0.192) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `OpenAIToAntigravity()` (e.g. with `TestOpenAIToAntigravity_Basic()` and `TestOpenAIToAntigravity_LayaRouting()`) actually correct?**
   _`OpenAIToAntigravity()` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `agproxy.nix`, `pkgs.buildGoModule`, `pkgs.mkShell` to the rest of the system?**

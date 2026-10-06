@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "internal/server/server.go": {
-    "mtime": 1791287222.4021485,
-    "seen": 1791327891.2389367,
-    "ast_hash": "38845e84826138988a0af635358165f9",
+    "mtime": 1791329311.5707989,
+    "seen": 1791329392.6947875,
+    "ast_hash": "6aeb4860b813dc285cc2ea8815162ed4",
     "semantic_hash": ""
   },
   "internal/stealth/sanitizer.go": {
@@ -120,9 +120,21 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791125000.4298086,
-    "seen": 1791327891.2389507,
-    "ast_hash": "28d35067d1b0817a6e2bc83584155c95",
+    "mtime": 1791329368.3650248,
+    "seen": 1791329392.6948082,
+    "ast_hash": "9570ff8801fe6f99a72c97d0c25c3faf",
+    "semantic_hash": ""
+  },
+  "internal/server/server_test.go": {
+    "mtime": 1791329339.8953753,
+    "seen": 1791329392.6947904,
+    "ast_hash": "86a3bf5e81f43cf4b13baba29383d7e3",
+    "semantic_hash": ""
+  },
+  "internal/server/web/dashboard.html": {
+    "mtime": 1791329275.7291825,
+    "seen": 1791329392.6948097,
+    "ast_hash": "f71ddd81d7833cc65c2af0d06de7ad70",
     "semantic_hash": ""
   }
 }

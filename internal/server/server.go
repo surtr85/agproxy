@@ -56,6 +56,10 @@ func (s *Server) validateAuth(r *http.Request) bool {
 	if s.apiKey == "" {
 		return true // open / local mode
 	}
+	// Allow browser requests originating from the local dashboard web UI
+	if r.Header.Get("Sec-Fetch-Site") == "same-origin" && (r.Header.Get("Referer") != "" && strings.Contains(r.Header.Get("Referer"), "/dashboard")) {
+		return true
+	}
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		return false

@@ -809,7 +809,7 @@
       "file_type": "code",
       "norm_label": ".acquireaccountslot()",
       "source_file": "internal/server/server.go",
-      "source_location": "L70"
+      "source_location": "L74"
     },
     {
       "id": "server_server_handleapidashboard",
@@ -820,7 +820,7 @@
       "file_type": "code",
       "norm_label": ".handleapidashboard()",
       "source_file": "internal/server/server.go",
-      "source_location": "L116"
+      "source_location": "L120"
     },
     {
       "id": "server_server_handlechatcompletions",
@@ -831,7 +831,7 @@
       "file_type": "code",
       "norm_label": ".handlechatcompletions()",
       "source_file": "internal/server/server.go",
-      "source_location": "L221"
+      "source_location": "L225"
     },
     {
       "id": "server_server_handledashboard",
@@ -842,7 +842,7 @@
       "file_type": "code",
       "norm_label": ".handledashboard()",
       "source_file": "internal/server/server.go",
-      "source_location": "L110"
+      "source_location": "L114"
     },
     {
       "id": "server_server_handlegetimage",
@@ -853,7 +853,7 @@
       "file_type": "code",
       "norm_label": ".handlegetimage()",
       "source_file": "internal/server/server.go",
-      "source_location": "L529"
+      "source_location": "L533"
     },
     {
       "id": "server_server_handlehealth",
@@ -864,7 +864,7 @@
       "file_type": "code",
       "norm_label": ".handlehealth()",
       "source_file": "internal/server/server.go",
-      "source_location": "L171"
+      "source_location": "L175"
     },
     {
       "id": "server_server_handleimagegenerations",
@@ -875,7 +875,7 @@
       "file_type": "code",
       "norm_label": ".handleimagegenerations()",
       "source_file": "internal/server/server.go",
-      "source_location": "L552"
+      "source_location": "L556"
     },
     {
       "id": "server_server_handlemodels",
@@ -886,7 +886,7 @@
       "file_type": "code",
       "norm_label": ".handlemodels()",
       "source_file": "internal/server/server.go",
-      "source_location": "L176"
+      "source_location": "L180"
     },
     {
       "id": "server_server_handleroot",
@@ -897,7 +897,7 @@
       "file_type": "code",
       "norm_label": ".handleroot()",
       "source_file": "internal/server/server.go",
-      "source_location": "L157"
+      "source_location": "L161"
     },
     {
       "id": "server_server_pipessestream",
@@ -908,7 +908,7 @@
       "file_type": "code",
       "norm_label": ".pipessestream()",
       "source_file": "internal/server/server.go",
-      "source_location": "L379"
+      "source_location": "L383"
     },
     {
       "id": "server_server_respondnonstreaming",
@@ -919,7 +919,7 @@
       "file_type": "code",
       "norm_label": ".respondnonstreaming()",
       "source_file": "internal/server/server.go",
-      "source_location": "L421"
+      "source_location": "L425"
     },
     {
       "id": "server_server_start",
@@ -930,7 +930,7 @@
       "file_type": "code",
       "norm_label": ".start()",
       "source_file": "internal/server/server.go",
-      "source_location": "L92"
+      "source_location": "L96"
     },
     {
       "id": "server_server_validateauth",
@@ -2724,7 +2724,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L139",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -2736,7 +2736,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L227",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -2748,7 +2748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L261",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -2760,7 +2760,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L268",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -2772,7 +2772,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L275",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -2784,7 +2784,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L306",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -2796,7 +2796,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L341",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -2808,7 +2808,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L371",
+      "source_location": "L375",
       "weight": 1.0
     },
     {
@@ -2820,7 +2820,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L558",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -2832,7 +2832,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -2844,7 +2844,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L613",
+      "source_location": "L617",
       "weight": 1.0
     },
     {
@@ -2856,7 +2856,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L620",
+      "source_location": "L624",
       "weight": 1.0
     },
     {
@@ -2868,7 +2868,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L657",
+      "source_location": "L661",
       "weight": 1.0
     },
     {
@@ -2880,7 +2880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L177",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -2892,7 +2892,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "internal/server/server.go",
-      "source_location": "L382",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -3648,7 +3648,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L116",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -3660,7 +3660,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L116",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -3672,7 +3672,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L221",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -3684,7 +3684,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L221",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -3696,7 +3696,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L110",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -3708,7 +3708,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L110",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -3720,7 +3720,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L529",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -3732,7 +3732,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L529",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -3744,7 +3744,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L171",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -3756,7 +3756,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L171",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -3768,7 +3768,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L552",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -3780,7 +3780,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L552",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -3792,7 +3792,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L176",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -3804,7 +3804,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L176",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -3816,7 +3816,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L157",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -3828,7 +3828,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L157",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -3840,7 +3840,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L379",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -3852,7 +3852,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L379",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -3864,7 +3864,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L379",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -3876,7 +3876,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "internal/server/server.go",
-      "source_location": "L421",
+      "source_location": "L425",
       "weight": 1.0
     },
     {
@@ -5573,7 +5573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L110",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -5584,7 +5584,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L116",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -5595,7 +5595,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L157",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -5606,7 +5606,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L171",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -5617,7 +5617,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L176",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -5628,7 +5628,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L221",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -5639,7 +5639,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L379",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -5650,7 +5650,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L421",
+      "source_location": "L425",
       "weight": 1.0
     },
     {
@@ -5661,7 +5661,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L529",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -5683,7 +5683,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L552",
+      "source_location": "L556",
       "weight": 1.0
     },
     {
@@ -5694,7 +5694,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L70",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -5705,7 +5705,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "internal/server/server.go",
-      "source_location": "L92",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -5865,5 +5865,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "dfed9bbcae7c6fd5b3a276f513c5edf84b323848"
+  "built_at_commit": "c9b67ce782ac6a1d972218b5e03b2131e5ec96e9"
 }

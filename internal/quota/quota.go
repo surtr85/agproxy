@@ -29,12 +29,12 @@ type RetrieveUserQuotaSummaryResponse struct {
 }
 
 type SingleQuotaItem struct {
-	Name       string
-	Used       int
-	Total      int
-	Percentage int
-	ResetIn    string
-	ResetTime  time.Time
+	Name       string    `json:"name"`
+	Used       int       `json:"used"`
+	Total      int       `json:"total"`
+	Percentage int       `json:"percentage"`
+	ResetIn    string    `json:"reset_in"`
+	ResetTime  time.Time `json:"reset_time"`
 }
 
 type QuotaReport struct {

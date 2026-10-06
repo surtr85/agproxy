@@ -591,18 +591,24 @@
 
           let quotasHtml = '';
           (acc.quotas || []).forEach(q => {
+            const name = q.name || q.Name || 'Quota';
+            const used = q.used !== undefined ? q.used : (q.Used || 0);
+            const total = q.total !== undefined ? q.total : (q.Total || 1000);
+            const percentage = q.percentage !== undefined ? q.percentage : (q.Percentage || 0);
+            const resetIn = q.reset_in || q.ResetIn || '5h 0m';
+
             let fillClass = 'high';
-            if (q.percentage < 60) fillClass = 'med';
-            if (q.percentage < 25) fillClass = 'low';
+            if (percentage < 60) fillClass = 'med';
+            if (percentage < 25) fillClass = 'low';
 
             quotasHtml += `
               <div class="quota-item">
                 <div class="quota-meta">
-                  <span class="quota-name mono">${q.name}</span>
-                  <span class="quota-stat mono"><b>${q.used}</b> / ${q.total} (${q.percentage}%) &bull; ${q.reset_in}</span>
+                  <span class="quota-name mono">${name}</span>
+                  <span class="quota-stat mono"><b>${used}</b> / ${total} (${percentage}%) &bull; ${resetIn}</span>
                 </div>
                 <div class="bar-container">
-                  <div class="bar-fill ${fillClass}" style="width: ${q.percentage}%"></div>
+                  <div class="bar-fill ${fillClass}" style="width: ${percentage}%"></div>
                 </div>
               </div>
             `;

@@ -52,7 +52,6 @@ var (
 	dshSpillRegex          = regexp.MustCompile(`(?i)dsh-spill-`)
 	dshWebBootRegex        = regexp.MustCompile(`(?i)\bdsh\s+web\b`)
 	dshNameRegex           = regexp.MustCompile(`(?i)\bDeepSeek(?:\s*Harness|-harness)?\b`)
-	dshHarnessRegex        = regexp.MustCompile(`(?i)\bharness\b`)
 	dshShortRegex          = regexp.MustCompile(`\bDSH\b`)
 	dshShortLowerRegex     = regexp.MustCompile(`\bdsh\b`)
 	multiNewlineRegex      = regexp.MustCompile(`\n{3,}`)
@@ -174,7 +173,6 @@ func SanitizePromptText(text string) string {
 	text = dshSpillRegex.ReplaceAllString(text, "ag-spill-")
 	text = dshWebBootRegex.ReplaceAllString(text, "antigravity")
 	text = dshNameRegex.ReplaceAllString(text, "Antigravity")
-	text = dshHarnessRegex.ReplaceAllString(text, "IDE")
 	text = dshShortRegex.ReplaceAllString(text, "AG")
 	text = dshShortLowerRegex.ReplaceAllString(text, "antigravity")
 

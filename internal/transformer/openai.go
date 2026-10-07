@@ -111,15 +111,22 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 
 		case "user":
 			parts := extractMessageParts(msg.Content)
-			for i := range parts {
-				if parts[i].Text != "" {
-					parts[i].Text = stealth.SanitizePromptText(parts[i].Text)
+			var cleanedParts []upstream.AntigravityPart
+			for _, p := range parts {
+				if p.Text != "" {
+					sanitized := stealth.SanitizePromptText(p.Text)
+					if sanitized != "" {
+						p.Text = sanitized
+						cleanedParts = append(cleanedParts, p)
+					}
+				} else if p.InlineData != nil {
+					cleanedParts = append(cleanedParts, p)
 				}
 			}
-			if len(parts) > 0 {
+			if len(cleanedParts) > 0 {
 				contents = append(contents, upstream.AntigravityContent{
 					Role:  "user",
-					Parts: parts,
+					Parts: cleanedParts,
 				})
 			}
 
@@ -127,7 +134,10 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			var parts []upstream.AntigravityPart
 			txt := extractText(msg.Content)
 			if txt != "" {
-				parts = append(parts, upstream.AntigravityPart{Text: stealth.SanitizePromptText(txt)})
+				sanitized := stealth.SanitizePromptText(txt)
+				if sanitized != "" {
+					parts = append(parts, upstream.AntigravityPart{Text: sanitized})
+				}
 			}
 
 			// Add tool calls
@@ -180,11 +190,12 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			}
 
 			txt := extractText(msg.Content)
-			txt = stealth.SanitizePromptText(txt)
 			var respMap map[string]any
 			if err := json.Unmarshal([]byte(txt), &respMap); err != nil {
 				respMap = map[string]any{"result": txt}
 			}
+			// Sanitize map values recursively so JSON structure remains valid
+			cleanToolResponseMap(respMap)
 
 			contents = append(contents, upstream.AntigravityContent{
 				Role: "user",
@@ -290,6 +301,25 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 		Payload:     wrapper,
 		ToolNameMap: toolNameMap,
 	}, nil
+}
+
+func cleanToolResponseMap(m map[string]any) {
+	for k, v := range m {
+		switch val := v.(type) {
+		case string:
+			m[k] = stealth.SanitizePromptText(val)
+		case map[string]any:
+			cleanToolResponseMap(val)
+		case []any:
+			for i, item := range val {
+				if s, ok := item.(string); ok {
+					val[i] = stealth.SanitizePromptText(s)
+				} else if subMap, ok := item.(map[string]any); ok {
+					cleanToolResponseMap(subMap)
+				}
+			}
+		}
+	}
 }
 
 func extractText(content any) string {

@@ -39,6 +39,24 @@ var (
 	// Rate-limit message parser
 	resetBodyRegex = regexp.MustCompile(`(?i)reset after (?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?`)
 
+	// DeepSeek Harness (DSH) sanitizers
+	dshIntroRegex          = regexp.MustCompile(`(?i)You are an AI agent powered by DeepSeek(?:\s*Harness)?\.`)
+	dshCheckoutBlockRegex  = regexp.MustCompile(`(?is)The DeepSeek Harness implementation checkout is at [^\n]*\.(?:[^\n]*\n?)*?Use this checkout only to inspect or extend DSH itself\.?`)
+	dshWebGuiBlockRegex    = regexp.MustCompile(`(?is)You are interacting with the user through the DeepSeek Harness Web GUI at [^\n]*\.(?:[^\n]*\n?)*?verify its exact URL\.?`)
+	dshRuntimeContextRegex = regexp.MustCompile(`(?is)Current runtime context\.\s*This snapshot supersedes earlier runtime-context snapshots\.\s*Current DSH file policy:.*?(?:Approval policy: [^\n]*(\n|$))?`)
+	dshModelChangedRegex   = regexp.MustCompile(`(?is)\[model changed:[^\]]*\]`)
+	dshCheckoutPathRegex   = regexp.MustCompile(`(?i)/home/[^/\s\n]+/\.local/share/dsh(?:/[^\s\n]*)?`)
+	dshPortRegex           = regexp.MustCompile(`http://127\.0\.0\.1:3080`)
+	dshEnvDollarRegex      = regexp.MustCompile(`\$DSH_([A-Za-z0-9_*]+)`)
+	dshEnvBareRegex        = regexp.MustCompile(`\bDSH_([A-Za-z0-9_*]+)\b`)
+	dshSpillRegex          = regexp.MustCompile(`(?i)dsh-spill-`)
+	dshWebBootRegex        = regexp.MustCompile(`(?i)\bdsh\s+web\b`)
+	dshNameRegex           = regexp.MustCompile(`(?i)\bDeepSeek(?:\s*Harness|-harness)?\b`)
+	dshHarnessRegex        = regexp.MustCompile(`(?i)\bharness\b`)
+	dshShortRegex          = regexp.MustCompile(`\bDSH\b`)
+	dshShortLowerRegex     = regexp.MustCompile(`\bdsh\b`)
+	multiNewlineRegex      = regexp.MustCompile(`\n{3,}`)
+
 	// Antigravity native tools used for decoys
 	NativeDecoyTools = []string{
 		"run_command",
@@ -142,6 +160,25 @@ func SanitizePromptText(text string) string {
 		}
 		return "antigravity"
 	})
+
+	// DeepSeek Harness scrubbers
+	text = dshIntroRegex.ReplaceAllString(text, "You are Antigravity, a powerful agentic AI coding assistant designed by the Google Deepmind team working on Advanced Agentic Coding.")
+	text = dshCheckoutBlockRegex.ReplaceAllString(text, "")
+	text = dshWebGuiBlockRegex.ReplaceAllString(text, "")
+	text = dshRuntimeContextRegex.ReplaceAllString(text, "")
+	text = dshModelChangedRegex.ReplaceAllString(text, "")
+	text = dshCheckoutPathRegex.ReplaceAllString(text, "/tmp/antigravity")
+	text = dshPortRegex.ReplaceAllString(text, "vscode-file://vscode-app")
+	text = dshEnvDollarRegex.ReplaceAllString(text, "$AG_$1")
+	text = dshEnvBareRegex.ReplaceAllString(text, "AG_$1")
+	text = dshSpillRegex.ReplaceAllString(text, "ag-spill-")
+	text = dshWebBootRegex.ReplaceAllString(text, "antigravity")
+	text = dshNameRegex.ReplaceAllString(text, "Antigravity")
+	text = dshHarnessRegex.ReplaceAllString(text, "IDE")
+	text = dshShortRegex.ReplaceAllString(text, "AG")
+	text = dshShortLowerRegex.ReplaceAllString(text, "antigravity")
+
+	text = multiNewlineRegex.ReplaceAllString(text, "\n\n")
 	return strings.TrimSpace(text)
 }
 
@@ -307,6 +344,13 @@ func cleanSchemaRecursive(v any) map[string]any {
 				res[k] = strings.ToLower(s)
 			} else {
 				res[k] = "object"
+			}
+			continue
+		}
+
+		if k == "description" {
+			if s, ok := val.(string); ok {
+				res[k] = SanitizePromptText(s)
 			}
 			continue
 		}

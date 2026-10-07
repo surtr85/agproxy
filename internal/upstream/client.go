@@ -69,6 +69,9 @@ func (c *Client) StreamGenerateContent(ctx context.Context, accessToken string, 
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("X-Client-Name", "antigravity")
+	req.Header.Set("X-Client-Version", "2.11.0")
+	req.Header.Set("X-Goog-Api-Client", "google-cloud-sdk/antigravity 2.11.0")
 	req.Header.Set("Accept", "text/event-stream")
 
 	resp, err := c.httpClient.Do(req)
@@ -95,6 +98,9 @@ func (c *Client) GenerateContent(ctx context.Context, accessToken string, payloa
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("X-Client-Name", "antigravity")
+	req.Header.Set("X-Client-Version", "2.11.0")
+	req.Header.Set("X-Goog-Api-Client", "google-cloud-sdk/antigravity 2.11.0")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

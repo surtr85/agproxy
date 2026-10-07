@@ -52,6 +52,18 @@ type TransformResult struct {
 	ToolNameMap map[string]string // suffixed -> original
 }
 
+func resolveSuffixedToolName(name string, toolNameMap map[string]string) string {
+	if stealth.NativeToolsSet[name] {
+		return name
+	}
+	suffixed := name
+	if !strings.HasSuffix(name, stealth.ToolSuffix) {
+		suffixed = name + stealth.ToolSuffix
+	}
+	toolNameMap[suffixed] = name
+	return suffixed
+}
+
 func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformResult, error) {
 	var modelInfo upstream.ModelInfo
 	modelClean := strings.TrimPrefix(req.Model, "agproxy/")
@@ -99,6 +111,11 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 
 		case "user":
 			parts := extractMessageParts(msg.Content)
+			for i := range parts {
+				if parts[i].Text != "" {
+					parts[i].Text = stealth.SanitizePromptText(parts[i].Text)
+				}
+			}
 			if len(parts) > 0 {
 				contents = append(contents, upstream.AntigravityContent{
 					Role:  "user",
@@ -110,7 +127,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			var parts []upstream.AntigravityPart
 			txt := extractText(msg.Content)
 			if txt != "" {
-				parts = append(parts, upstream.AntigravityPart{Text: txt})
+				parts = append(parts, upstream.AntigravityPart{Text: stealth.SanitizePromptText(txt)})
 			}
 
 			// Add tool calls
@@ -123,11 +140,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 				}
 
 				name := tc.Function.Name
-				suffixedName := name
-				if !stealth.NativeToolsSet[name] {
-					suffixedName = name + stealth.ToolSuffix
-					toolNameMap[suffixedName] = name
-				}
+				suffixedName := resolveSuffixedToolName(name, toolNameMap)
 				if tc.ID != "" {
 					callIDToName[tc.ID] = suffixedName
 				}
@@ -159,11 +172,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			name := msg.Name
 			var suffixedName string
 			if name != "" {
-				suffixedName = name
-				if !stealth.NativeToolsSet[name] {
-					suffixedName = name + stealth.ToolSuffix
-					toolNameMap[suffixedName] = name
-				}
+				suffixedName = resolveSuffixedToolName(name, toolNameMap)
 			} else if mapped, ok := callIDToName[msg.ToolCallID]; ok {
 				suffixedName = mapped
 			} else if cachedName := stealth.GetToolCallName(msg.ToolCallID); cachedName != "" {
@@ -171,6 +180,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			}
 
 			txt := extractText(msg.Content)
+			txt = stealth.SanitizePromptText(txt)
 			var respMap map[string]any
 			if err := json.Unmarshal([]byte(txt), &respMap); err != nil {
 				respMap = map[string]any{"result": txt}
@@ -197,17 +207,13 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 	for _, tool := range req.Tools {
 		if tool.Type == "function" {
 			name := tool.Function.Name
-			suffixedName := name
-			if !stealth.NativeToolsSet[name] {
-				suffixedName = name + stealth.ToolSuffix
-				toolNameMap[suffixedName] = name
-			}
+			suffixedName := resolveSuffixedToolName(name, toolNameMap)
 
 			if !seenDecls[suffixedName] {
 				seenDecls[suffixedName] = true
 				functionDecls = append(functionDecls, upstream.AntigravityFunctionDecl{
 					Name:        suffixedName,
-					Description: tool.Function.Description,
+					Description: stealth.SanitizePromptText(tool.Function.Description),
 					Parameters:  stealth.CleanJSONSchema(tool.Function.Parameters),
 				})
 			}
@@ -275,7 +281,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 	wrapper := &upstream.AntigravityRequestWrapper{
 		Project:   projectID,
 		Model:     modelInfo.UpstreamModel,
-		UserAgent: "antigravity",
+		UserAgent: upstream.UserAgent,
 		RequestID: requestID,
 		Request:   agReq,
 	}

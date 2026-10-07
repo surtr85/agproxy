@@ -36,6 +36,9 @@ var (
 	piPkgRegex           = regexp.MustCompile(`(?i)@earendil-works/pi-coding-agent`)
 	piEnvRegex           = regexp.MustCompile(`\bPI_([A-Z_]+)\b`)
 
+	// Model identity sanitizer (replace custom client models like "laya" with standard upstream model)
+	layaModelRegex = regexp.MustCompile(`(?i)\bpowered by the laya model\b`)
+
 	// Rate-limit message parser
 	resetBodyRegex = regexp.MustCompile(`(?i)reset after (?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?`)
 
@@ -146,6 +149,7 @@ func SanitizePromptText(text string) string {
 	text = rooCodePromptRegex.ReplaceAllString(text, "You are a helpful coding assistant.")
 	text = hermesPromptRegex.ReplaceAllString(text, "You are an AI assistant.")
 	text = piHarnessPromptRegex.ReplaceAllString(text, "You are Antigravity, a powerful agentic AI coding assistant designed by the Google Deepmind team working on Advanced Agentic Coding.")
+	text = layaModelRegex.ReplaceAllString(text, "powered by the gemini-3.8-flash-high model")
 	text = piDocsBlockRegex.ReplaceAllString(text, "")
 	text = piPkgRegex.ReplaceAllString(text, "antigravity-coding-agent")
 	text = piSubagentsRegex.ReplaceAllString(text, "antigravity-subagents")

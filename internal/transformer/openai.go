@@ -114,11 +114,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			var cleanedParts []upstream.AntigravityPart
 			for _, p := range parts {
 				if p.Text != "" {
-					sanitized := stealth.SanitizePromptText(p.Text)
-					if sanitized != "" {
-						p.Text = sanitized
-						cleanedParts = append(cleanedParts, p)
-					}
+					cleanedParts = append(cleanedParts, p)
 				} else if p.InlineData != nil {
 					cleanedParts = append(cleanedParts, p)
 				}
@@ -134,10 +130,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			var parts []upstream.AntigravityPart
 			txt := extractText(msg.Content)
 			if txt != "" {
-				sanitized := stealth.SanitizePromptText(txt)
-				if sanitized != "" {
-					parts = append(parts, upstream.AntigravityPart{Text: sanitized})
-				}
+				parts = append(parts, upstream.AntigravityPart{Text: txt})
 			}
 
 			// Add tool calls
@@ -194,8 +187,7 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 			if err := json.Unmarshal([]byte(txt), &respMap); err != nil {
 				respMap = map[string]any{"result": txt}
 			}
-			// Sanitize map values recursively so JSON structure remains valid
-			cleanToolResponseMap(respMap)
+			// Preserve raw tool responses verbatim without destructive sanitization
 
 			contents = append(contents, upstream.AntigravityContent{
 				Role: "user",
@@ -301,25 +293,6 @@ func OpenAIToAntigravity(req *OpenAIChatRequest, projectID string) (*TransformRe
 		Payload:     wrapper,
 		ToolNameMap: toolNameMap,
 	}, nil
-}
-
-func cleanToolResponseMap(m map[string]any) {
-	for k, v := range m {
-		switch val := v.(type) {
-		case string:
-			m[k] = stealth.SanitizePromptText(val)
-		case map[string]any:
-			cleanToolResponseMap(val)
-		case []any:
-			for i, item := range val {
-				if s, ok := item.(string); ok {
-					val[i] = stealth.SanitizePromptText(s)
-				} else if subMap, ok := item.(map[string]any); ok {
-					cleanToolResponseMap(subMap)
-				}
-			}
-		}
-	}
 }
 
 func extractText(content any) string {

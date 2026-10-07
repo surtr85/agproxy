@@ -54,9 +54,6 @@ var (
 	dshEnvBareRegex        = regexp.MustCompile(`\bDSH_([A-Za-z0-9_*]+)\b`)
 	dshSpillRegex          = regexp.MustCompile(`(?i)dsh-spill-`)
 	dshWebBootRegex        = regexp.MustCompile(`(?i)\bdsh\s+web\b`)
-	dshNameRegex           = regexp.MustCompile(`(?i)\bDeepSeek(?:\s*Harness|-harness)?\b`)
-	dshShortRegex          = regexp.MustCompile(`\bDSH\b`)
-	dshShortLowerRegex     = regexp.MustCompile(`\bdsh\b`)
 	multiNewlineRegex      = regexp.MustCompile(`\n{3,}`)
 
 	// Antigravity native tools used for decoys
@@ -176,9 +173,6 @@ func SanitizePromptText(text string) string {
 	text = dshEnvBareRegex.ReplaceAllString(text, "AG_$1")
 	text = dshSpillRegex.ReplaceAllString(text, "ag-spill-")
 	text = dshWebBootRegex.ReplaceAllString(text, "antigravity")
-	text = dshNameRegex.ReplaceAllString(text, "Antigravity")
-	text = dshShortRegex.ReplaceAllString(text, "AG")
-	text = dshShortLowerRegex.ReplaceAllString(text, "antigravity")
 
 	text = multiNewlineRegex.ReplaceAllString(text, "\n\n")
 	return strings.TrimSpace(text)

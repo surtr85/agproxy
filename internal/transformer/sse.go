@@ -50,11 +50,14 @@ type OpenAISSEChunk struct {
 }
 
 type SSEState struct {
-	ResponseID  string
-	Model       string
-	Created     int64
-	ToolNameMap map[string]string
-	ToolIndex   int
+	ResponseID       string
+	Model            string
+	Created          int64
+	ToolNameMap      map[string]string
+	ToolIndex        int
+	PromptTokens     int
+	CompletionTokens int
+	TotalTokens      int
 }
 
 func NewSSEState(model string, toolNameMap map[string]string) *SSEState {
@@ -149,6 +152,12 @@ func (s *SSEState) ConvertChunk(googleChunkBytes []byte) ([]byte, bool, error) {
 		finishReason = &r
 	}
 
+	if gChunk.Response.UsageMetadata.TotalTokenCount > 0 {
+		s.PromptTokens = gChunk.Response.UsageMetadata.PromptTokenCount
+		s.CompletionTokens = gChunk.Response.UsageMetadata.CandidatesTokenCount
+		s.TotalTokens = gChunk.Response.UsageMetadata.TotalTokenCount
+	}
+
 	if delta.Content == "" && delta.ReasoningContent == "" && len(delta.ToolCalls) == 0 && finishReason == nil {
 		return nil, isDone, nil
 	}
@@ -172,11 +181,11 @@ func (s *SSEState) ConvertChunk(googleChunkBytes []byte) ([]byte, bool, error) {
 
 	chunk.Choices = append(chunk.Choices, choice)
 
-	if isDone && gChunk.Response.UsageMetadata.TotalTokenCount > 0 {
+	if isDone && s.TotalTokens > 0 {
 		chunk.Usage = &OpenAIUsage{
-			PromptTokens:     gChunk.Response.UsageMetadata.PromptTokenCount,
-			CompletionTokens: gChunk.Response.UsageMetadata.CandidatesTokenCount,
-			TotalTokens:      gChunk.Response.UsageMetadata.TotalTokenCount,
+			PromptTokens:     s.PromptTokens,
+			CompletionTokens: s.CompletionTokens,
+			TotalTokens:      s.TotalTokens,
 		}
 	}
 

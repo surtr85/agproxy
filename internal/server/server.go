@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/surtr85/agproxy/internal/auth"
+	"github.com/surtr85/agproxy/internal/cache"
 	"github.com/surtr85/agproxy/internal/config"
 	"github.com/surtr85/agproxy/internal/quota"
 	"github.com/surtr85/agproxy/internal/stealth"
@@ -80,7 +81,7 @@ func (s *Server) acquireAccountSlot(email string) func() {
 	}
 	last := s.lastRequestTime[email]
 	elapsed := time.Since(last)
-	minInterval := 150 * time.Millisecond // minimum spacing to prevent bursting
+	minInterval := 30 * time.Millisecond // ultra-low latency gateway spacing
 	if elapsed < minInterval {
 		time.Sleep(minInterval - elapsed)
 	}
@@ -101,6 +102,7 @@ func (s *Server) Start() error {
 	mux.HandleFunc("/v1/images/generations", s.handleImageGenerations)
 	mux.HandleFunc("/v1/images/", s.handleGetImage)
 	mux.HandleFunc("/v1/models", s.handleModels)
+	mux.HandleFunc("/api/cache", s.handleAPICache)
 	mux.HandleFunc("/health", s.handleHealth)
 	mux.HandleFunc("/", s.handleRoot)
 
@@ -149,11 +151,14 @@ func (s *Server) handleAPIDashboard(w http.ResponseWriter, r *http.Request) {
 		dtoList = append(dtoList, dto)
 	}
 
+	cStats := cache.GetInstance().GetStats()
+
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{
-		"version":      "0.1.0",
+		"version":      "0.2.0",
 		"active_email": activeEmail,
 		"accounts":     dtoList,
+		"cache":        cStats,
 		"timestamp":    time.Now().Unix(),
 	})
 }
@@ -167,9 +172,20 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(map[string]any{
 		"service":        "agproxy",
 		"status":         "running",
-		"version":        "0.1.0",
+		"version":        "0.2.0",
 		"active_account": s.store.GetActiveAccount() != nil,
 	})
+}
+
+func (s *Server) handleAPICache(w http.ResponseWriter, r *http.Request) {
+	if !s.validateAuth(r) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode(map[string]any{"error": "Unauthorized"})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(cache.GetInstance().GetStats())
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -251,6 +267,35 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(bodyBytes, &chatReq); err != nil {
 		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
 		return
+	}
+
+	// 1. Intelligent Gateway Cache Check (Zero-Latency Hit)
+	cacheKey := cache.ComputeCacheKey(chatReq.Model, chatReq.Messages, chatReq.Tools)
+	cInstance := cache.GetInstance()
+
+	if cached, hit := cInstance.Get(cacheKey); hit {
+		log.Printf("[agproxy:CACHE_HIT] Key: %s... (Saved %d prompt tokens)", cacheKey[:12], cached.PromptTokens)
+		if chatReq.Stream {
+			w.Header().Set("Content-Type", "text/event-stream")
+			w.Header().Set("Cache-Control", "no-cache")
+			w.Header().Set("Connection", "keep-alive")
+			w.Header().Set("X-Accel-Buffering", "no")
+			w.Header().Set("X-Cache-Lookup", "HIT")
+
+			flusher, ok := w.(http.Flusher)
+			if ok {
+				for _, chunk := range cached.Chunks {
+					_, _ = w.Write(chunk)
+					flusher.Flush()
+				}
+				return
+			}
+		} else if len(cached.FullResponse) > 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("X-Cache-Lookup", "HIT")
+			_, _ = w.Write(cached.FullResponse)
+			return
+		}
 	}
 
 	// Retry loop for multi-account auto-rotation upon 429
@@ -342,7 +387,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			s.pipeSSEStream(streamBody, w, flusher, chatReq.Model, transformRes.ToolNameMap)
+			s.pipeSSEStream(streamBody, w, flusher, chatReq.Model, transformRes.ToolNameMap, cacheKey)
 			release()
 			return
 		} else {
@@ -372,7 +417,7 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 			}
 
 			s.store.MarkSuccess(acc.Email)
-			s.respondNonStreaming(w, respBytes, chatReq.Model, transformRes.ToolNameMap)
+			s.respondNonStreaming(w, respBytes, chatReq.Model, transformRes.ToolNameMap, cacheKey)
 			return
 		}
 	}
@@ -380,11 +425,12 @@ func (s *Server) handleChatCompletions(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "All accounts are currently rate-limited or exhausted.", http.StatusTooManyRequests)
 }
 
-func (s *Server) pipeSSEStream(upstreamStream io.ReadCloser, w http.ResponseWriter, flusher http.Flusher, model string, toolNameMap map[string]string) {
+func (s *Server) pipeSSEStream(upstreamStream io.ReadCloser, w http.ResponseWriter, flusher http.Flusher, model string, toolNameMap map[string]string, cacheKey string) {
 	defer upstreamStream.Close()
 
 	sseState := transformer.NewSSEState(model, toolNameMap)
 	reader := bufio.NewReader(upstreamStream)
+	var recordedChunks [][]byte
 
 	for {
 		line, err := reader.ReadBytes('\n')
@@ -408,6 +454,7 @@ func (s *Server) pipeSSEStream(upstreamStream io.ReadCloser, w http.ResponseWrit
 				continue
 			}
 			if len(converted) > 0 {
+				recordedChunks = append(recordedChunks, converted)
 				_, _ = w.Write(converted)
 				flusher.Flush()
 			}
@@ -417,12 +464,18 @@ func (s *Server) pipeSSEStream(upstreamStream io.ReadCloser, w http.ResponseWrit
 		}
 	}
 
-	// Emit finish DONE
-	_, _ = w.Write([]byte("data: [DONE]\n\n"))
+	doneChunk := []byte("data: [DONE]\n\n")
+	recordedChunks = append(recordedChunks, doneChunk)
+	_, _ = w.Write(doneChunk)
 	flusher.Flush()
+
+	// Store in high-performance Gateway Cache if valid
+	if len(recordedChunks) > 1 && sseState.TotalTokens > 0 {
+		cache.GetInstance().Set(cacheKey, recordedChunks, nil, sseState.PromptTokens, sseState.CompletionTokens, sseState.TotalTokens)
+	}
 }
 
-func (s *Server) respondNonStreaming(w http.ResponseWriter, googleRespBytes []byte, model string, toolNameMap map[string]string) {
+func (s *Server) respondNonStreaming(w http.ResponseWriter, googleRespBytes []byte, model string, toolNameMap map[string]string, cacheKey string) {
 	var gChunk upstream.GoogleStreamChunk
 	if err := json.Unmarshal(googleRespBytes, &gChunk); err != nil {
 		http.Error(w, "Failed to parse Google response", http.StatusInternalServerError)
@@ -526,8 +579,13 @@ func (s *Server) respondNonStreaming(w http.ResponseWriter, googleRespBytes []by
 	resp.Usage.CompletionTokens = gChunk.Response.UsageMetadata.CandidatesTokenCount
 	resp.Usage.TotalTokens = gChunk.Response.UsageMetadata.TotalTokenCount
 
+	encodedBytes, _ := json.Marshal(resp)
+	if resp.Usage.TotalTokens > 0 {
+		cache.GetInstance().Set(cacheKey, nil, encodedBytes, resp.Usage.PromptTokens, resp.Usage.CompletionTokens, resp.Usage.TotalTokens)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(resp)
+	_, _ = w.Write(encodedBytes)
 }
 
 func (s *Server) handleGetImage(w http.ResponseWriter, r *http.Request) {

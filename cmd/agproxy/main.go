@@ -22,7 +22,7 @@ import (
 	"github.com/surtr85/agproxy/internal/upstream"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 func printHelp() {
 	fmt.Printf(`agproxy v%s - Ultra-lightweight Go Reverse Proxy for Google Antigravity

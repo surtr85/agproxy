@@ -35,7 +35,7 @@ func TestDashboardEndpoints(t *testing.T) {
 		t.Fatalf("expected HTTP 200 for API, got %d", recAPI.Code)
 	}
 	apiBody := recAPI.Body.String()
-	if !strings.Contains(apiBody, `"version":"0.1.0"`) {
+	if !strings.Contains(apiBody, `"version":"0.2.0"`) {
 		t.Errorf("expected json version, got: %s", apiBody)
 	}
 }

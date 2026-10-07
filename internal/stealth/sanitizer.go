@@ -344,6 +344,18 @@ func cleanSchemaRecursive(v any) map[string]any {
 		if k == "type" {
 			if s, ok := val.(string); ok {
 				res[k] = strings.ToLower(s)
+			} else if typeList, ok := val.([]any); ok {
+				chosen := "string"
+				for _, t := range typeList {
+					if ts, ok := t.(string); ok {
+						tsLower := strings.ToLower(ts)
+						if tsLower != "null" {
+							chosen = tsLower
+							break
+						}
+					}
+				}
+				res[k] = chosen
 			} else {
 				res[k] = "object"
 			}
@@ -369,11 +381,35 @@ func cleanSchemaRecursive(v any) map[string]any {
 		}
 
 		if k == "items" {
-			res[k] = cleanSchemaRecursive(val)
+			if itemsMap, ok := val.(map[string]any); ok {
+				res[k] = cleanSchemaRecursive(itemsMap)
+			} else if itemsSlice, ok := val.([]any); ok && len(itemsSlice) > 0 {
+				res[k] = cleanSchemaRecursive(itemsSlice[0])
+			} else {
+				res[k] = cleanSchemaRecursive(val)
+			}
 			continue
 		}
 
 		res[k] = val
+	}
+
+	if _, hasType := res["type"]; !hasType {
+		if _, hasItems := res["items"]; hasItems {
+			res["type"] = "array"
+		}
+	}
+
+	// Ensure array type has valid items
+	if res["type"] == "array" {
+		itemsMap, ok := res["items"].(map[string]any)
+		if !ok || len(itemsMap) == 0 {
+			res["items"] = map[string]any{
+				"type": "string",
+			}
+		} else if _, hasType := itemsMap["type"]; !hasType {
+			itemsMap["type"] = "string"
+		}
 	}
 
 	return res

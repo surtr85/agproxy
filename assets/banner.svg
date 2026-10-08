@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420">
+  <defs>
+    <!-- Deep Space Void Gradient -->
+    <radialGradient id="void-glow" cx="60%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#02111b" />
+      <stop offset="60%" stop-color="#010609" />
+      <stop offset="100%" stop-color="#000000" />
+    </radialGradient>
+
+    <!-- The Aurora / Nebula Glow behind the monolith -->
+    <linearGradient id="aurora-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" stop-opacity="0.2"/>
+      <stop offset="25%" stop-color="#0ea5e9" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#818cf8" stop-opacity="0.6"/>
+      <stop offset="85%" stop-color="#f43f5e" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="extreme-blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30" />
+    </filter>
+
+    <!-- The Monolith Edge Highlight -->
+    <linearGradient id="edge-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2e8f0" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </linearGradient>
+
+    <pattern id="noise-pattern" width="200" height="200" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.5" fill="#ffffff" fill-opacity="0.03"/>
+      <circle cx="8" cy="15" r="0.8" fill="#ffffff" fill-opacity="0.04"/>
+      <circle cx="23" cy="7" r="0.4" fill="#ffffff" fill-opacity="0.02"/>
+      <circle cx="45" cy="40" r="0.6" fill="#ffffff" fill-opacity="0.02"/>
+    </pattern>
+  </defs>
+
+  <!-- Pitch Black Void -->
+  <rect width="1200" height="420" fill="#000000" />
+  <rect width="1200" height="420" fill="url(#void-glow)" opacity="0.9" />
+
+  <!-- Aurora / Ethereal glow (in the background, behind the monolith) -->
+  <path d="M 300 0 C 700 80, 800 250, 600 420 L 0 420 L 0 0 Z" fill="url(#aurora-glow)" filter="url(#extreme-blur)" opacity="0.8" />
+  <!-- A secondary sharper glow band -->
+  <path d="M 400 -50 C 600 100, 700 300, 500 450" fill="none" stroke="#22d3ee" stroke-width="40" filter="url(#extreme-blur)" opacity="0.6" />
+
+  <!-- The Monolith (Absolute Black shape intersecting the canvas) -->
+  <path d="M 480 0 L 1200 0 L 1200 420 L 320 420 Z" fill="#020306" />
+
+  <!-- The Monolith Edge / The Refraction Line -->
+  <!-- This represents absolute precision and stealth routing -->
+  <path d="M 480 0 L 320 420" fill="none" stroke="url(#edge-highlight)" stroke-width="2.5" />
+  <path d="M 482 0 L 322 420" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.5" />
+
+  <!-- Minimalist Optics / Splitting concept -->
+  <!-- A perfectly straight line entering the monolith and bending precisely -->
+  <line x1="0" y1="210" x2="375" y2="210" stroke="#94a3b8" stroke-width="0.5" stroke-opacity="0.6" stroke-dasharray="2 4" />
+  <!-- Refracted internal lines (very faint) -->
+  <line x1="375" y1="210" x2="1200" y2="150" stroke="#34d399" stroke-width="0.5" stroke-opacity="0.2" />
+  <line x1="375" y1="210" x2="1200" y2="210" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.2" />
+  <line x1="375" y1="210" x2="1200" y2="270" stroke="#f472b6" stroke-width="0.5" stroke-opacity="0.2" />
+
+  <!-- Granular film grain overlay -->
+  <rect width="1200" height="420" fill="url(#noise-pattern)" />
+
+  <!-- Extreme Minimalist Typography -->
+  <g transform="translate(1000, 360)">
+    <!-- Title -->
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="32" font-weight="200" fill="#f8fafc" letter-spacing="12" text-anchor="end">
+      A G P R O X Y
+    </text>
+    <!-- Subtitle -->
+    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif" font-size="9" font-weight="400" fill="#64748b" letter-spacing="6" text-anchor="end" opacity="0.8">
+      STEALTH REVERSE PROXY
+    </text>
+  </g>
+
+  <!-- Delicate Frame -->
+  <rect x="30" y="30" width="1140" height="360" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.05" />
+
+  <text x="50" y="55" font-family="'JetBrains Mono', monospace" font-size="8" fill="#475569" letter-spacing="3" opacity="0.6">
+    PORT: 8080
+  </text>
+  <text x="1150" y="55" font-family="'JetBrains Mono', monospace" font-size="8" fill="#475569" letter-spacing="3" text-anchor="end" opacity="0.6">
+    STEALTH: ACTIVE
+  </text>
+</svg>

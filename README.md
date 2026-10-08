@@ -1,10 +1,13 @@
-```
-   ___   _________  _______  ______  ____  __
-  / _ | / ___/ __ \/ _ \ _ \/ __/\ \/ /\ \/ /
- / __ |/ (_ / /_/ / ___/   / _/   \  /  \  / 
-/_/ |_|\___/\____/_/  /_/|_\___/  /_/   /_/  
-```
-> **Ultra-lightweight, single-binary Go reverse proxy for Google Antigravity with stealth anti-detection, multi-account rotation, Google AI Pro quota monitoring, Laya System-1 dynamic steering, Nano Banana 2 image generation, and a cyberpunk Web Mission Control.**
+<p align="center">
+  <picture>
+    <source type="image/svg+xml" srcset="assets/banner.svg">
+    <img src="assets/banner.png" alt="agproxy Banner" width="100%">
+  </picture>
+</p>
+
+# ⚡ agproxy
+
+> **Ultra-lightweight, single-binary Go reverse proxy for Google Antigravity with stealth anti-detection, multi-account rotation, Google AI Pro quota monitoring, Laya System-1 dynamic steering, Nano Banana 2 image generation, and a high-density Web Mission Control.**
 
 [![NixOS Flake](https://img.shields.io/badge/NixOS-Flake-blue?logo=nixos)](https://nixos.org)
 [![Go Report](https://img.shields.io/badge/Go-1.23-00ADD8?logo=go)](https://golang.org)
